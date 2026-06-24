@@ -16,10 +16,30 @@ import { StatusBar } from "expo-status-bar";
 import { View, useColorScheme } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { ClerkProvider } from "@clerk/clerk-expo";
 import { colors } from "@/theme";
+import { config, isAuthConfigured } from "@/lib/config";
+import { tokenCache } from "@/lib/token-cache";
+import { DemoPortfolioProvider } from "@/data/portfolio-context";
+import { ApiPortfolioProvider } from "@/data/portfolio-api-provider";
+import { AuthGate } from "@/components/auth/AuthGate";
+
+function RootStack() {
+  const scheme = useColorScheme() === "light" ? "light" : "dark";
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: colors[scheme].bg },
+      }}
+    >
+      <Stack.Screen name="(tabs)" />
+    </Stack>
+  );
+}
 
 export default function RootLayout() {
-  const scheme = useColorScheme() === "dark" ? "dark" : "light";
+  const scheme = useColorScheme() === "light" ? "light" : "dark";
   const [loaded] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
@@ -35,18 +55,28 @@ export default function RootLayout() {
     return <View style={{ flex: 1, backgroundColor: colors[scheme].bg }} />;
   }
 
+  const content = isAuthConfigured ? (
+    <ClerkProvider
+      publishableKey={config.clerkPublishableKey}
+      tokenCache={tokenCache}
+    >
+      <AuthGate>
+        <ApiPortfolioProvider>
+          <RootStack />
+        </ApiPortfolioProvider>
+      </AuthGate>
+    </ClerkProvider>
+  ) : (
+    <DemoPortfolioProvider>
+      <RootStack />
+    </DemoPortfolioProvider>
+  );
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <StatusBar style={scheme === "dark" ? "light" : "dark"} />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: colors[scheme].bg },
-          }}
-        >
-          <Stack.Screen name="(tabs)" />
-        </Stack>
+        {content}
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
