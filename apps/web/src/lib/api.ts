@@ -59,6 +59,8 @@ function toError(e: unknown): NextResponse {
   if (e instanceof ApiAuthError) return json({ error: e.message }, 401);
   if (e instanceof ZodError)
     return json({ error: "Invalid input", issues: e.flatten() }, 400);
+  if (e instanceof Error && e.name === "AiUnavailableError")
+    return json({ error: e.message }, 503);
   const msg = e instanceof Error ? e.message : "";
   if (msg === "handle_taken") return json({ error: "That handle is taken" }, 409);
   if (msg === "not_found") return json({ error: "Not found" }, 404);

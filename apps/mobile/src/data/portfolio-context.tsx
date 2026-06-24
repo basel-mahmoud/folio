@@ -37,6 +37,15 @@ export type PortfolioData = {
 
 export type Section = "projects" | "experiences" | "education" | "skills";
 
+export type TailorResult = {
+  matchScore: number;
+  summary: string;
+  strengths: string[];
+  gaps: string[];
+  rewrittenBullets: { before: string; after: string }[];
+  missingKeywords: string[];
+};
+
 export type PortfolioContextValue = {
   data: PortfolioData | null;
   loading: boolean;
@@ -51,6 +60,12 @@ export type PortfolioContextValue = {
   addEducation: (e: Omit<Education, "id">) => Promise<void>;
   addSkillGroup: (g: Omit<SkillGroup, "id">) => Promise<void>;
   remove: (section: Section, id: string) => Promise<void>;
+  tailor: (jobDescription: string) => Promise<TailorResult>;
+  generateText: (
+    kind: "bio" | "project" | "headline",
+    notes: string,
+    tone?: string,
+  ) => Promise<string>;
 };
 
 const Ctx = createContext<PortfolioContextValue | null>(null);
@@ -101,6 +116,35 @@ export function DemoPortfolioProvider({ children }: { children: React.ReactNode 
         setData((d) => ({ ...d, skills: [...d.skills, { ...g, id: rid() }] })),
       remove: async (section, id) =>
         setData((d) => ({ ...d, [section]: d[section].filter((x) => x.id !== id) })),
+      tailor: async () => {
+        await new Promise((r) => setTimeout(r, 900));
+        const skills = data.skills.flatMap((s) => s.items);
+        return {
+          matchScore: 88,
+          summary:
+            "Strong fit — your full-stack and AI project work maps well to this role.",
+          strengths: [
+            "Production multi-tenant SaaS experience",
+            "End-to-end product ownership",
+            skills.slice(0, 2).join(" & ") || "Relevant tech stack",
+          ],
+          gaps: ["Add a quantified metric to a recent role", "Mention team collaboration"],
+          rewrittenBullets: [
+            {
+              before: "Worked on the frontend and helped with the backend.",
+              after:
+                "Built and shipped a React + Next.js dashboard and the Node APIs behind it, cutting page loads 40%.",
+            },
+          ],
+          missingKeywords: ["CI/CD", "unit testing"],
+        };
+      },
+      generateText: async (_kind, notes) => {
+        await new Promise((r) => setTimeout(r, 700));
+        return notes?.trim()
+          ? `${notes.trim()} — refined for impact.`
+          : "Your polished text will appear here.";
+      },
     }),
     [data],
   );

@@ -10,6 +10,7 @@ import {
   type PortfolioData,
   type PortfolioContextValue,
   type Section,
+  type TailorResult,
 } from "./portfolio-context";
 
 type Bundle = {
@@ -124,6 +125,16 @@ export function ApiPortfolioProvider({ children }: { children: React.ReactNode }
       remove: async (section: Section, id: string) => {
         await call(`/api/me/${section}/${id}`, "DELETE");
         setData((d) => (d ? { ...d, [section]: d[section].filter((x) => x.id !== id) } : d));
+      },
+      tailor: (jobDescription: string) =>
+        call<TailorResult>("/api/me/ai/tailor", "POST", { jobDescription }),
+      generateText: async (kind, notes, tone) => {
+        const r = await call<{ text: string }>("/api/me/ai/text", "POST", {
+          kind,
+          notes,
+          tone: tone ?? "professional",
+        });
+        return r.text;
       },
     }),
     [data, loading, error, refresh, call],
