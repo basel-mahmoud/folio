@@ -1,18 +1,21 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "Folio",
+    "slug": "folio",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "mobile",
+    "scheme": "folio",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "app.basel.folio",
+      "supportsTablet": true
     },
     "android": {
+      "package": "app.basel.folio",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#09090b",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -28,8 +31,11 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#09090b",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 76,
           "android": {
+            "backgroundColor": "#09090b",
             "image": "./assets/images/splash-icon.png",
             "imageWidth": 76
           }
@@ -40,6 +46,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c4d2d262-7333-49c6-bfe6-78765e488ced"
+      }
+    },
+    "owner": "baselmahmoud"
   }
 }
