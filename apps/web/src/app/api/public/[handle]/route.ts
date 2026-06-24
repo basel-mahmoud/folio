@@ -9,5 +9,8 @@ export async function GET(
   const { handle } = await params;
   const bundle = await getPublicByHandle(handle.toLowerCase());
   if (!bundle) return json({ error: "Not found" }, 404);
-  return json(bundle);
+  // Published portfolios change rarely → let the Vercel edge cache absorb load.
+  return json(bundle, {
+    headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" },
+  });
 }

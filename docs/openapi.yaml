@@ -1,0 +1,125 @@
+openapi: 3.1.0
+info:
+  title: Folio API
+  version: 0.1.0
+  description: >
+    JSON API consumed by the Folio mobile app, plus a public read endpoint.
+    All /api/me/* routes require a Clerk session JWT (Authorization: Bearer).
+    Mutations accept an Idempotency-Key header and are rate-limited per user.
+servers:
+  - url: https://folio-fawn-nu.vercel.app
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      schema: { type: string }
+  schemas:
+    Link: { type: object, properties: { label: {type: string}, url: {type: string} } }
+    Profile:
+      type: object
+      properties:
+        name: { type: string }
+        headline: { type: string }
+        location: { type: string }
+        bio: { type: string }
+        links: { type: array, items: { $ref: "#/components/schemas/Link" } }
+        theme: { type: string, enum: [system, light, dark] }
+    Project:
+      type: object
+      required: [title]
+      properties:
+        title: { type: string }
+        role: { type: string }
+        year: { type: string }
+        summary: { type: string }
+        tags: { type: array, items: { type: string } }
+        link: { type: string }
+    TailorResult:
+      type: object
+      properties:
+        matchScore: { type: integer, minimum: 0, maximum: 100 }
+        summary: { type: string }
+        strengths: { type: array, items: { type: string } }
+        gaps: { type: array, items: { type: string } }
+        rewrittenBullets:
+          type: array
+          items: { type: object, properties: { before: {type: string}, after: {type: string} } }
+        missingKeywords: { type: array, items: { type: string } }
+    Error: { type: object, properties: { error: { type: string } } }
+security:
+  - bearerAuth: []
+paths:
+  /api/me:
+    get:
+      summary: Current user's full portfolio bundle
+      responses: { "200": { description: OK }, "401": { description: Unauthenticated } }
+    delete:
+      summary: Erase the account and all data (GDPR)
+      responses: { "200": { description: Deleted } }
+  /api/me/profile:
+    patch:
+      summary: Update profile
+      parameters: [ { $ref: "#/components/parameters/IdempotencyKey" } ]
+      requestBody: { content: { application/json: { schema: { $ref: "#/components/schemas/Profile" } } } }
+      responses: { "200": { description: OK }, "400": { description: Invalid input } }
+  /api/me/handle:
+    post:
+      summary: Claim/change the public handle
+      requestBody: { content: { application/json: { schema: { type: object, properties: { handle: {type: string} } } } } }
+      responses: { "200": { description: OK }, "409": { description: Handle taken } }
+  /api/me/publish:
+    post:
+      summary: Toggle public/private
+      requestBody: { content: { application/json: { schema: { type: object, properties: { published: {type: boolean} } } } } }
+      responses: { "200": { description: OK } }
+  /api/me/export:
+    get:
+      summary: Export all of the user's data (GDPR)
+      responses: { "200": { description: OK } }
+  /api/me/projects:
+    post:
+      summary: Add a project
+      parameters: [ { $ref: "#/components/parameters/IdempotencyKey" } ]
+      requestBody: { content: { application/json: { schema: { $ref: "#/components/schemas/Project" } } } }
+      responses: { "200": { description: Created } }
+  /api/me/projects/{id}:
+    patch: { summary: Update a project, responses: { "200": { description: OK }, "404": { description: Not found } } }
+    delete: { summary: Delete a project, responses: { "200": { description: OK } } }
+  /api/me/experiences:
+    post: { summary: Add experience, responses: { "200": { description: Created } } }
+  /api/me/experiences/{id}:
+    delete: { summary: Delete experience, responses: { "200": { description: OK } } }
+  /api/me/education:
+    post: { summary: Add education, responses: { "200": { description: Created } } }
+  /api/me/education/{id}:
+    delete: { summary: Delete education, responses: { "200": { description: OK } } }
+  /api/me/skills:
+    post: { summary: Add a skill group, responses: { "200": { description: Created } } }
+  /api/me/skills/{id}:
+    delete: { summary: Delete a skill group, responses: { "200": { description: OK } } }
+  /api/me/ai/tailor:
+    post:
+      summary: Tailor the CV to a job description
+      requestBody: { content: { application/json: { schema: { type: object, required: [jobDescription], properties: { jobDescription: {type: string} } } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/TailorResult" } } } }
+        "429": { description: Rate limited }
+        "503": { description: AI unavailable }
+  /api/me/ai/text:
+    post:
+      summary: Generate/polish a bio, headline, or project blurb
+      requestBody: { content: { application/json: { schema: { type: object, properties: { kind: {type: string, enum: [bio, project, headline]}, notes: {type: string}, tone: {type: string} } } } } }
+      responses: { "200": { description: OK }, "503": { description: AI unavailable } }
+  /api/public/{handle}:
+    get:
+      summary: A published portfolio by handle (public, no auth)
+      security: []
+      parameters: [ { name: handle, in: path, required: true, schema: { type: string } } ]
+      responses: { "200": { description: OK }, "404": { description: Not found } }

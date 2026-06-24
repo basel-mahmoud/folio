@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowUpRight, FileDown } from "lucide-react";
 import { getPublicByHandle } from "@/lib/services/portfolio";
@@ -175,9 +176,9 @@ export default async function PublicPortfolio({
       )}
 
       <footer className="mt-24 border-t border-border pt-6">
-        <a href="/" className="font-mono text-xs text-faint transition-colors hover:text-ink">
+        <Link href="/" className="font-mono text-xs text-faint transition-colors hover:text-ink">
           Built with Folio ↗
-        </a>
+        </Link>
       </footer>
     </main>
   );
