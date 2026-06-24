@@ -11,6 +11,10 @@ import {
   LayoutGrid,
   Check,
 } from "lucide-react";
+import { Logo } from "@/components/logo";
+import { Reveal } from "@/components/reveal";
+import { RotatingWord } from "@/components/rotating-word";
+import { CountUp } from "@/components/count-up";
 
 const features = [
   { icon: LayoutGrid, title: "Live native builder", body: "Compose your profile, projects, experience and skills in a fast mobile app with an instant preview." },
@@ -27,10 +31,12 @@ const steps = [
   { n: "03", t: "Share & tailor", b: "Publish your page, export a Modern or Harvard CV, and re-tailor for each role." },
 ];
 
+const TECH = ["Next.js 16","React Native","Expo","Neon Postgres","Drizzle ORM","Clerk","Gemini","TypeScript","Reanimated","Row-level security","Vercel"];
+
 function Wordmark() {
   return (
     <span className="inline-flex items-center gap-2.5">
-      <span className="inline-block h-[18px] w-[18px] rounded-[5px] bg-accent" />
+      <Logo size={22} />
       <span className="font-mono text-[15px] font-bold tracking-[0.22em] text-ink">FOLIO</span>
     </span>
   );
@@ -44,13 +50,9 @@ export default function Home() {
         <nav className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
           <Wordmark />
           <div className="flex items-center gap-2">
-            <Link href="/u/basel" className="hidden rounded-[8px] px-3 py-2 text-sm text-ink-dim transition-colors hover:text-ink sm:block">
-              Live example
-            </Link>
-            <a href="https://github.com/basel-mahmoud/folio" className="hidden rounded-[8px] px-3 py-2 text-sm text-ink-dim transition-colors hover:text-ink sm:block">
-              GitHub
-            </a>
-            <a href="/download" className="inline-flex items-center gap-1.5 rounded-[8px] bg-accent px-3.5 py-2 text-sm font-medium text-[#fff]">
+            <Link href="/u/basel" className="hidden rounded-[8px] px-3 py-2 text-sm text-ink-dim transition-colors hover:text-ink sm:block">Live example</Link>
+            <a href="https://github.com/basel-mahmoud/folio" className="hidden rounded-[8px] px-3 py-2 text-sm text-ink-dim transition-colors hover:text-ink sm:block">GitHub</a>
+            <a href="/download" className="inline-flex items-center gap-1.5 rounded-[8px] bg-accent px-3.5 py-2 text-sm font-medium text-[#fff] transition-transform hover:-translate-y-px">
               <Download size={15} /> Download
             </a>
           </div>
@@ -58,7 +60,7 @@ export default function Home() {
       </header>
 
       {/* Hero */}
-      <section className="mx-auto max-w-5xl px-6 pt-20 pb-16 sm:pt-28">
+      <section className="mx-auto max-w-5xl px-6 pt-20 pb-14 sm:pt-28">
         <div className="rise mx-auto max-w-3xl text-center">
           <span className="font-mono inline-flex items-center gap-2 rounded-full border border-border-strong px-3 py-1 text-xs uppercase tracking-[0.16em] text-ink-dim">
             <span className="h-1.5 w-1.5 rounded-full bg-accent" /> AI portfolio &amp; CV builder
@@ -69,11 +71,14 @@ export default function Home() {
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-pretty text-base leading-relaxed text-ink-dim sm:text-lg">
             Build a live portfolio in a native app, let AI polish every word, and
-            tailor your CV — Modern or Harvard — to any job. Publish a fast page
-            recruiters can open anywhere.
+            tailor your CV — Modern or Harvard — to any job.
+          </p>
+          <p className="font-mono mt-4 text-sm text-muted">
+            Made for{" "}
+            <RotatingWord words={["software engineers", "designers", "new grads", "career switchers", "product managers"]} />
           </p>
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <a href="/download" className="inline-flex w-full items-center justify-center gap-2 rounded-[10px] bg-accent px-6 py-3 text-[15px] font-medium text-[#fff] sm:w-auto">
+            <a href="/download" className="inline-flex w-full items-center justify-center gap-2 rounded-[10px] bg-accent px-6 py-3 text-[15px] font-medium text-[#fff] transition-transform hover:-translate-y-px sm:w-auto">
               <Download size={17} /> Download the app
             </a>
             <Link href="/u/basel" className="inline-flex w-full items-center justify-center gap-2 rounded-[10px] border border-border-strong px-6 py-3 text-[15px] text-ink transition-colors hover:bg-surface-2 sm:w-auto">
@@ -83,9 +88,9 @@ export default function Home() {
           <p className="font-mono mt-4 text-xs text-faint">Android APK · free · export anytime</p>
         </div>
 
-        {/* Preview mock */}
+        {/* Floating preview mock */}
         <div className="rise mx-auto mt-16 max-w-2xl" style={{ animationDelay: "0.15s" }}>
-          <div className="overflow-hidden rounded-[16px] border border-border-strong bg-surface">
+          <div className="floaty overflow-hidden rounded-[16px] border border-border-strong bg-surface shadow-[0_24px_60px_-30px_rgba(0,0,0,0.6)]">
             <div className="flex items-center gap-2 border-b border-border px-4 py-3">
               <span className="h-1.5 w-1.5 rounded-full bg-success" />
               <span className="font-mono text-xs text-muted">folio.app/u/basel</span>
@@ -107,85 +112,120 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features */}
-      <section id="features" className="mx-auto max-w-5xl px-6 py-20">
-        <h2 className="max-w-2xl text-3xl font-semibold tracking-tight text-ink sm:text-4xl">Everything you need to stand out.</h2>
-        <p className="mt-3 text-ink-dim">A portfolio, a CV, and an AI writing partner — in one calm, fast place.</p>
-        <div className="mt-10 grid gap-px overflow-hidden rounded-[16px] border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((f) => (
-            <article key={f.title} className="bg-surface p-6">
-              <div className="flex h-10 w-10 items-center justify-center rounded-[8px] border border-border-strong">
-                <f.icon size={18} className="text-accent" />
+      {/* Tech marquee */}
+      <div className="overflow-hidden border-y border-border py-4">
+        <div className="marquee-track">
+          {[0, 1].map((k) => (
+            <div key={k} className="flex items-center gap-7 pr-7" aria-hidden={k === 1}>
+              {TECH.map((t) => (
+                <span key={t} className="flex items-center gap-7">
+                  <span className="font-mono text-sm whitespace-nowrap text-muted">{t}</span>
+                  <span className="text-faint">·</span>
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Stats */}
+      <section className="mx-auto max-w-5xl px-6 py-16">
+        <Reveal>
+          <div className="grid grid-cols-2 gap-px overflow-hidden rounded-[16px] border border-border bg-border sm:grid-cols-4">
+            {[
+              { v: <CountUp value={2} />, l: "Résumé templates" },
+              { v: <CountUp value={60} suffix="s" />, l: "To a live page" },
+              { v: <CountUp value={100} suffix="%" />, l: "Your data, exportable" },
+              { v: <span>$0</span>, l: "To get started" },
+            ].map((s, i) => (
+              <div key={i} className="bg-surface px-5 py-7 text-center">
+                <div className="font-mono text-3xl font-bold text-ink">{s.v}</div>
+                <div className="mt-1 text-xs text-muted">{s.l}</div>
               </div>
-              <h3 className="mt-4 font-semibold text-ink">{f.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-ink-dim">{f.body}</p>
-            </article>
+            ))}
+          </div>
+        </Reveal>
+      </section>
+
+      {/* Features */}
+      <section id="features" className="mx-auto max-w-5xl px-6 py-16">
+        <Reveal className="max-w-2xl">
+          <h2 className="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">Everything you need to stand out.</h2>
+          <p className="mt-3 text-ink-dim">A portfolio, a CV, and an AI writing partner — in one calm, fast place.</p>
+        </Reveal>
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {features.map((f, i) => (
+            <Reveal key={f.title} delay={(i % 3) * 0.08}>
+              <article className="lift h-full rounded-[16px] border border-border bg-surface p-6">
+                <div className="flex h-10 w-10 items-center justify-center rounded-[8px] border border-border-strong">
+                  <f.icon size={18} className="text-accent" />
+                </div>
+                <h3 className="mt-4 font-semibold text-ink">{f.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-ink-dim">{f.body}</p>
+              </article>
+            </Reveal>
           ))}
         </div>
       </section>
 
       {/* How it works */}
-      <section className="mx-auto max-w-5xl px-6 py-20">
-        <h2 className="text-center text-3xl font-semibold tracking-tight text-ink sm:text-4xl">Live in three steps.</h2>
+      <section className="mx-auto max-w-5xl px-6 py-16">
+        <Reveal><h2 className="text-center text-3xl font-semibold tracking-tight text-ink sm:text-4xl">Live in three steps.</h2></Reveal>
         <div className="mt-12 grid gap-4 md:grid-cols-3">
-          {steps.map((s) => (
-            <div key={s.n} className="rounded-[16px] border border-border bg-surface p-6">
-              <span className="font-mono text-sm text-accent">{s.n}</span>
-              <h3 className="mt-3 text-xl font-semibold text-ink">{s.t}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-ink-dim">{s.b}</p>
-            </div>
+          {steps.map((s, i) => (
+            <Reveal key={s.n} delay={i * 0.08}>
+              <div className="lift h-full rounded-[16px] border border-border bg-surface p-6">
+                <span className="font-mono text-sm text-accent">{s.n}</span>
+                <h3 className="mt-3 text-xl font-semibold text-ink">{s.t}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-ink-dim">{s.b}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
       </section>
 
       {/* Résumé templates */}
-      <section className="mx-auto max-w-5xl px-6 py-20">
+      <section className="mx-auto max-w-5xl px-6 py-16">
         <div className="grid items-center gap-10 lg:grid-cols-2">
-          <div>
+          <Reveal>
             <span className="font-mono text-xs uppercase tracking-[0.16em] text-accent">Résumé templates</span>
             <h2 className="mt-4 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">One profile. Two recruiter-ready CVs.</h2>
-            <p className="mt-4 text-ink-dim">
-              Export a clean modern résumé or an exact, ATS-friendly Harvard-format
-              résumé — both generated from the same data and downloadable as PDF.
-            </p>
+            <p className="mt-4 text-ink-dim">Export a clean modern résumé or an exact, ATS-friendly Harvard-format résumé — both generated from the same data and downloadable as PDF.</p>
             <ul className="mt-6 space-y-3">
               {["Exact Harvard one-page layout", "Modern editorial layout", "Save-as-PDF from any browser", "Always in sync with your portfolio"].map((t) => (
-                <li key={t} className="flex items-start gap-3 text-sm">
-                  <Check size={17} className="mt-0.5 shrink-0 text-accent" />
-                  <span className="text-ink-dim">{t}</span>
-                </li>
+                <li key={t} className="flex items-start gap-3 text-sm"><Check size={17} className="mt-0.5 shrink-0 text-accent" /><span className="text-ink-dim">{t}</span></li>
               ))}
             </ul>
-            <Link href="/u/basel/cv?template=harvard" className="font-mono mt-7 inline-flex items-center gap-1.5 text-sm text-ink transition-colors hover:text-accent">
-              View a Harvard CV <ArrowUpRight size={14} className="text-faint" />
-            </Link>
-          </div>
-          <div className="rounded-[16px] border border-border bg-surface p-5">
-            <div className="rounded-[10px] bg-[#fff] p-6 text-[#111]">
-              <p className="text-center text-lg font-semibold">Basel Mahmoud</p>
-              <p className="text-center text-[11px] text-[#555]">Amman, Jordan · github.com/basel-mahmoud · hello@basel.dev</p>
-              <div className="mt-3 border-t border-[#222] pt-2 text-[10px] uppercase tracking-widest text-[#666]">Education</div>
-              <p className="mt-1 text-[11px]"><b>University of Jordan</b> — B.Sc. Computer Science</p>
-              <div className="mt-2 border-t border-[#ddd] pt-2 text-[10px] uppercase tracking-widest text-[#666]">Experience</div>
-              <p className="mt-1 text-[11px]"><b>Full-stack engineer</b> · Independent</p>
-              <p className="text-[10px] text-[#555]">Design, build and ship end-to-end products with tests and CI/CD.</p>
+            <Link href="/u/basel/cv?template=harvard" className="font-mono mt-7 inline-flex items-center gap-1.5 text-sm text-ink transition-colors hover:text-accent">View a Harvard CV <ArrowUpRight size={14} className="text-faint" /></Link>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <div className="rounded-[16px] border border-border bg-surface p-5">
+              <div className="rounded-[10px] bg-[#fff] p-6 text-[#111]">
+                <p className="text-center text-lg font-semibold">Basel Mahmoud</p>
+                <p className="text-center text-[11px] text-[#555]">Amman, Jordan · github.com/basel-mahmoud · hello@basel.dev</p>
+                <div className="mt-3 border-t border-[#222] pt-2 text-[10px] uppercase tracking-widest text-[#666]">Education</div>
+                <p className="mt-1 text-[11px]"><b>University of Jordan</b> — B.Sc. Computer Science</p>
+                <div className="mt-2 border-t border-[#ddd] pt-2 text-[10px] uppercase tracking-widest text-[#666]">Experience</div>
+                <p className="mt-1 text-[11px]"><b>Full-stack engineer</b> · Independent</p>
+                <p className="text-[10px] text-[#555]">Design, build and ship end-to-end products with tests and CI/CD.</p>
+              </div>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* CTA */}
       <section className="mx-auto max-w-5xl px-6 py-20">
-        <div className="rounded-[20px] border border-border-strong bg-surface p-10 text-center sm:p-16">
-          <h2 className="mx-auto max-w-xl text-3xl font-semibold tracking-tight text-ink sm:text-4xl">Make the page that gets you hired.</h2>
-          <p className="mx-auto mt-3 max-w-md text-ink-dim">Install the app, build your portfolio, share it anywhere.</p>
-          <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <a href="/download" className="inline-flex items-center justify-center gap-2 rounded-[10px] bg-accent px-6 py-3 text-[15px] font-medium text-[#fff]">
-              <Download size={17} /> Download the APK
-            </a>
-            <Link href="/u/basel" className="font-mono text-sm text-ink-dim transition-colors hover:text-ink">or see a live example →</Link>
+        <Reveal>
+          <div className="rounded-[20px] border border-border-strong bg-surface p-10 text-center sm:p-16">
+            <h2 className="mx-auto max-w-xl text-3xl font-semibold tracking-tight text-ink sm:text-4xl">Make the page that gets you hired.</h2>
+            <p className="mx-auto mt-3 max-w-md text-ink-dim">Install the app, build your portfolio, share it anywhere.</p>
+            <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <a href="/download" className="inline-flex items-center justify-center gap-2 rounded-[10px] bg-accent px-6 py-3 text-[15px] font-medium text-[#fff] transition-transform hover:-translate-y-px"><Download size={17} /> Download the APK</a>
+              <Link href="/u/basel" className="font-mono text-sm text-ink-dim transition-colors hover:text-ink">or see a live example →</Link>
+            </div>
           </div>
-        </div>
+        </Reveal>
       </section>
 
       {/* Footer */}
