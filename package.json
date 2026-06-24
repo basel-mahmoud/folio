@@ -1,0 +1,16 @@
+{
+  "name": "folio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Folio — AI portfolio & CV builder. Native Expo app + Next.js API/public-web, on Vercel + Neon + Clerk + Gemini.",
+  "scripts": {
+    "mobile": "npm --prefix apps/mobile run start",
+    "mobile:web": "npm --prefix apps/mobile run web",
+    "mobile:typecheck": "cd apps/mobile && npx tsc --noEmit",
+    "web": "npm --prefix apps/web run dev",
+    "web:build": "npm --prefix apps/web run build",
+    "web:lint": "npm --prefix apps/web run lint",
+    "web:typecheck": "npm --prefix apps/web run typecheck",
+    "web:test": "npm --prefix apps/web test"
+  }
+}
