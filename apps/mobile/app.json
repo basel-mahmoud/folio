@@ -8,7 +8,6 @@
     "scheme": "folio",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon",
       "bundleIdentifier": "app.basel.folio",
       "supportsTablet": true
     },

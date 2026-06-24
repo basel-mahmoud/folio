@@ -1,9 +1,10 @@
 import { View, StyleSheet, Linking, ActivityIndicator } from "react-native";
-import { Share2, ArrowUpRight } from "lucide-react-native";
-import { Screen, Text, Row, Tag, Divider } from "@/ui";
+import { Share2, ArrowUpRight, FileDown, FileText } from "lucide-react-native";
+import { Screen, Text, Row, Tag, Divider, Button } from "@/ui";
 import { Appear, PressScale } from "@/ui/motion";
 import { useTheme } from "@/theme";
 import { usePortfolio } from "@/data/portfolio-context";
+import { config } from "@/lib/config";
 import type { Project, Experience } from "@/data/demo";
 
 function monthYear(v: string | null): string {
@@ -39,6 +40,8 @@ export default function PreviewScreen() {
 
   let idx = 1;
   const next = () => String(++idx).padStart(2, "0");
+  const openCv = (q = "") =>
+    Linking.openURL(`${config.apiUrl}/u/${data.handle}/cv${q}`);
 
   return (
     <Screen contentStyle={{ paddingTop: t.space[4] }}>
@@ -136,6 +139,28 @@ export default function PreviewScreen() {
           </View>
         </View>
       )}
+
+      <View style={{ marginTop: t.space[14] }}>
+        <Appear index={0}>
+          <Marker index={next()} label="Résumé" />
+        </Appear>
+        <View style={{ gap: t.space[3] }}>
+          <Button
+            label="Modern CV (PDF)"
+            variant="secondary"
+            full
+            icon={<FileDown size={17} color={t.colors.ink} strokeWidth={1.75} />}
+            onPress={() => openCv("")}
+          />
+          <Button
+            label="Harvard CV (PDF)"
+            variant="secondary"
+            full
+            icon={<FileText size={17} color={t.colors.ink} strokeWidth={1.75} />}
+            onPress={() => openCv("?template=harvard")}
+          />
+        </View>
+      </View>
     </Screen>
   );
 }
