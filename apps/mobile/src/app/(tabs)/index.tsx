@@ -81,7 +81,7 @@ export default function BuildScreen() {
         <Row justify="space-between">
           <Row gap={t.space[2.5]}>
             <Logo size={20} />
-            <Text style={{ fontFamily: t.font.mono.bold, fontSize: 15, letterSpacing: 2.5, color: t.colors.ink }}>
+            <Text style={{ fontFamily: t.font.mono.bold, fontSize: 15, lineHeight: 20, includeFontPadding: false, letterSpacing: 2.5, color: t.colors.ink }}>
               FOLIO
             </Text>
           </Row>

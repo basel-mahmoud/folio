@@ -6,6 +6,7 @@ import { useSignIn, useSignUp, useSSO } from "@clerk/clerk-expo";
 import { Mail, ArrowRight } from "lucide-react-native";
 import { Screen, Text, Field, Button, Row } from "@/ui";
 import { Logo } from "@/ui/Logo";
+import { GoogleIcon } from "@/ui/GoogleIcon";
 import { useTheme } from "@/theme";
 
 WebBrowser.maybeCompleteAuthSession();
@@ -94,7 +95,7 @@ export function SignInScreen() {
       <View style={{ alignItems: "center", marginBottom: t.space[10] }}>
         <Row gap={t.space[2.5]}>
           <Logo size={22} />
-          <Text style={{ fontFamily: t.font.mono.bold, fontSize: 16, letterSpacing: 2.5, color: t.colors.ink }}>
+          <Text style={{ fontFamily: t.font.mono.bold, fontSize: 16, lineHeight: 22, includeFontPadding: false, letterSpacing: 2.5, color: t.colors.ink }}>
             FOLIO
           </Text>
         </Row>
@@ -117,6 +118,7 @@ export function SignInScreen() {
             size="lg"
             full
             loading={busy}
+            icon={<GoogleIcon size={18} />}
             onPress={google}
           />
           <Row gap={t.space[3]}>
