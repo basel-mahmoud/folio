@@ -95,7 +95,7 @@ export function SignInScreen() {
       <View style={{ alignItems: "center", marginBottom: t.space[10] }}>
         <Row gap={t.space[2.5]}>
           <Logo size={22} />
-          <Text style={{ fontFamily: t.font.mono.bold, fontSize: 16, lineHeight: 22, includeFontPadding: false, letterSpacing: 2.5, color: t.colors.ink }}>
+          <Text style={{ fontFamily: t.font.mono.bold, fontSize: 16, lineHeight: 22, includeFontPadding: false, letterSpacing: 2.5, color: t.colors.ink, marginTop: 3 }}>
             FOLIO
           </Text>
         </Row>
