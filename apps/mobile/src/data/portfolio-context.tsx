@@ -59,6 +59,7 @@ export type PortfolioContextValue = {
   addExperience: (e: Omit<Experience, "id">) => Promise<void>;
   addEducation: (e: Omit<Education, "id">) => Promise<void>;
   addSkillGroup: (g: Omit<SkillGroup, "id">) => Promise<void>;
+  update: (section: Section, id: string, input: Record<string, unknown>) => Promise<void>;
   remove: (section: Section, id: string) => Promise<void>;
   tailor: (jobDescription: string) => Promise<TailorResult>;
   generateText: (
@@ -66,6 +67,8 @@ export type PortfolioContextValue = {
     notes: string,
     tone?: string,
   ) => Promise<string>;
+  exportData: () => Promise<unknown>;
+  deleteAccount: () => Promise<void>;
 };
 
 const Ctx = createContext<PortfolioContextValue | null>(null);
@@ -114,6 +117,13 @@ export function DemoPortfolioProvider({ children }: { children: React.ReactNode 
         setData((d) => ({ ...d, education: [...d.education, { ...e, id: rid() }] })),
       addSkillGroup: async (g) =>
         setData((d) => ({ ...d, skills: [...d.skills, { ...g, id: rid() }] })),
+      update: async (section, id, input) =>
+        setData((d) => ({
+          ...d,
+          [section]: (d[section] as { id: string }[]).map((x) =>
+            x.id === id ? { ...x, ...input } : x,
+          ),
+        })),
       remove: async (section, id) =>
         setData((d) => ({ ...d, [section]: d[section].filter((x) => x.id !== id) })),
       tailor: async () => {
@@ -145,6 +155,8 @@ export function DemoPortfolioProvider({ children }: { children: React.ReactNode 
           ? `${notes.trim()} — refined for impact.`
           : "Your polished text will appear here.";
       },
+      exportData: async () => ({ exportedAt: new Date().toISOString(), ...data }),
+      deleteAccount: async () => {},
     }),
     [data],
   );

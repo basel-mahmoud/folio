@@ -1,10 +1,11 @@
-import { View, StyleSheet, Linking, ActivityIndicator } from "react-native";
+import { View, StyleSheet, Linking, ActivityIndicator, Share } from "react-native";
 import { Share2, ArrowUpRight, FileDown, FileText } from "lucide-react-native";
 import { Screen, Text, Row, Tag, Divider, Button } from "@/ui";
 import { Appear, PressScale } from "@/ui/motion";
 import { useTheme } from "@/theme";
 import { usePortfolio } from "@/data/portfolio-context";
 import { config } from "@/lib/config";
+import { haptics } from "@/lib/haptics";
 import type { Project, Experience } from "@/data/demo";
 
 function monthYear(v: string | null): string {
@@ -42,6 +43,11 @@ export default function PreviewScreen() {
   const next = () => String(++idx).padStart(2, "0");
   const openCv = (q = "") =>
     Linking.openURL(`${config.apiUrl}/u/${data.handle}/cv${q}`);
+  const onShare = () => {
+    haptics.tap();
+    const url = `${config.apiUrl}/u/${data.handle}`;
+    Share.share({ message: `My portfolio — ${url}`, url });
+  };
 
   return (
     <Screen contentStyle={{ paddingTop: t.space[4] }}>
@@ -54,7 +60,7 @@ export default function PreviewScreen() {
             <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: data.published ? t.colors.success : t.colors.warning }} />
             <Text style={{ fontFamily: t.font.mono.regular, fontSize: 12, color: t.colors.muted }}>folio.app/u/{data.handle}</Text>
           </Row>
-          <PressScale hitSlop={8}>
+          <PressScale hitSlop={8} onPress={onShare}>
             <Share2 size={16} color={t.colors.inkDim} strokeWidth={1.75} />
           </PressScale>
         </Row>

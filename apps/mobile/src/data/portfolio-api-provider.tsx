@@ -122,6 +122,14 @@ export function ApiPortfolioProvider({ children }: { children: React.ReactNode }
         const row = await call<PortfolioData["skills"][number]>("/api/me/skills", "POST", g);
         setData((d) => (d ? { ...d, skills: [...d.skills, row] } : d));
       },
+      update: async (section: Section, id: string, input: Record<string, unknown>) => {
+        await call(`/api/me/${section}/${id}`, "PATCH", input);
+        setData((d) =>
+          d
+            ? { ...d, [section]: (d[section] as { id: string }[]).map((x) => (x.id === id ? { ...x, ...input } : x)) as never }
+            : d,
+        );
+      },
       remove: async (section: Section, id: string) => {
         await call(`/api/me/${section}/${id}`, "DELETE");
         setData((d) => (d ? { ...d, [section]: d[section].filter((x) => x.id !== id) } : d));
@@ -135,6 +143,13 @@ export function ApiPortfolioProvider({ children }: { children: React.ReactNode }
           tone: tone ?? "professional",
         });
         return r.text;
+      },
+      exportData: async () => {
+        const token = await getToken();
+        return apiFetch("/api/me/export", { token });
+      },
+      deleteAccount: async () => {
+        await call("/api/me", "DELETE");
       },
     }),
     [data, loading, error, refresh, call],

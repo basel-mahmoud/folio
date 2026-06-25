@@ -161,6 +161,33 @@ export async function updateProject(userId: string, id: string, input: ProjectIn
   });
 }
 
+export async function updateExperience(userId: string, id: string, input: ExperienceInput) {
+  return withUser(userId, async (tx) => {
+    const row = await tx.update(experiences).set(input).where(eq(experiences.id, id)).returning();
+    if (!row[0]) throw new Error("not_found");
+    await appendAudit(tx, { userId, actorId: userId, action: "experience.update", targetType: "experience", targetId: id });
+    return row[0];
+  });
+}
+
+export async function updateEducation(userId: string, id: string, input: EducationInput) {
+  return withUser(userId, async (tx) => {
+    const row = await tx.update(education).set(input).where(eq(education.id, id)).returning();
+    if (!row[0]) throw new Error("not_found");
+    await appendAudit(tx, { userId, actorId: userId, action: "education.update", targetType: "education", targetId: id });
+    return row[0];
+  });
+}
+
+export async function updateSkillGroup(userId: string, id: string, input: SkillGroupInput) {
+  return withUser(userId, async (tx) => {
+    const row = await tx.update(skillGroups).set(input).where(eq(skillGroups.id, id)).returning();
+    if (!row[0]) throw new Error("not_found");
+    await appendAudit(tx, { userId, actorId: userId, action: "skillgroup.update", targetType: "skill_group", targetId: id });
+    return row[0];
+  });
+}
+
 export async function addExperience(userId: string, input: ExperienceInput) {
   const pf = await getOrCreatePortfolio(userId);
   return withUser(userId, async (tx) => {

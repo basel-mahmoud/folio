@@ -1,18 +1,22 @@
 import { useState } from "react";
 import { View, Pressable, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
-import { X, Plus, Trash2 } from "lucide-react-native";
+import { X, Plus, Trash2, Sparkles } from "lucide-react-native";
 import { Screen, Text, Field, Button, Row, Surface } from "@/ui";
 import { useTheme } from "@/theme";
+import { useToast } from "@/ui/Toast";
+import { haptics } from "@/lib/haptics";
 import { usePortfolio } from "@/data/portfolio-context";
 import type { Link } from "@/data/demo";
 
 export default function EditProfile() {
   const t = useTheme();
   const router = useRouter();
-  const { data, updateProfile, setHandle } = usePortfolio();
+  const { data, updateProfile, setHandle, generateText } = usePortfolio();
+  const toast = useToast();
 
   const [name, setName] = useState(data?.name ?? "");
+  const [polishing, setPolishing] = useState(false);
   const [headline, setHeadline] = useState(data?.headline ?? "");
   const [location, setLocation] = useState(data?.location ?? "");
   const [bio, setBio] = useState(data?.bio ?? "");
@@ -33,11 +37,27 @@ export default function EditProfile() {
         links: links.filter((l) => l.label && l.url),
       });
       if (handle && handle !== data?.handle) await setHandle(handle);
+      haptics.success();
+      toast.show("Profile saved");
       router.back();
     } catch (e) {
+      haptics.warn();
       setError(e instanceof Error && e.message === "handle_taken" ? "That handle is taken." : "Couldn't save. Try again.");
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function polishBio() {
+    setPolishing(true);
+    try {
+      const out = await generateText("bio", bio, "professional");
+      if (out) { setBio(out); haptics.success(); toast.show("Bio polished with AI"); }
+    } catch {
+      haptics.warn();
+      toast.show("AI is busy — try again");
+    } finally {
+      setPolishing(false);
     }
   }
 
@@ -56,7 +76,15 @@ export default function EditProfile() {
         <Field label="Headline" value={headline} onChangeText={setHeadline} placeholder="e.g. Full-stack engineer" />
         <Field label="Location" value={location} onChangeText={setLocation} placeholder="City, Country" />
         <Field label="Handle" value={handle} onChangeText={(v) => setHandleVal(v.toLowerCase())} autoCapitalize="none" placeholder="username" hint={`folio.app/u/${handle || "username"}`} />
-        <Field label="Bio" value={bio} onChangeText={setBio} placeholder="A short, sharp summary of what you do." multiline />
+        <View style={{ gap: t.space[2] }}>
+          <Field label="Bio" value={bio} onChangeText={setBio} placeholder="A short, sharp summary of what you do." multiline />
+          <Pressable onPress={polishBio} disabled={polishing} style={{ alignSelf: "flex-start", opacity: polishing ? 0.5 : 1 }}>
+            <Row gap={6}>
+              <Sparkles size={13} color={t.colors.accent} strokeWidth={2} />
+              <Text variant="caption" color="accent">{polishing ? "Polishing…" : "Polish with AI"}</Text>
+            </Row>
+          </Pressable>
+        </View>
 
         <View style={{ gap: t.space[2.5] }}>
           <Text variant="label">Links</Text>

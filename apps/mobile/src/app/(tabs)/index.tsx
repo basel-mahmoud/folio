@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { View, StyleSheet, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import {
@@ -16,12 +17,16 @@ import { Screen, Text, Surface, Row, Button, Divider } from "@/ui";
 import { Avatar, initialsOf } from "@/ui/Avatar";
 import { Appear, PressScale, AnimatedProgress } from "@/ui/motion";
 import { useTheme } from "@/theme";
+import { useToast } from "@/ui/Toast";
+import { haptics } from "@/lib/haptics";
 import { usePortfolio } from "@/data/portfolio-context";
 
 export default function BuildScreen() {
   const t = useTheme();
   const router = useRouter();
-  const { data, loading, setPublished } = usePortfolio();
+  const toast = useToast();
+  const { data, loading, setPublished, refresh } = usePortfolio();
+  const [refreshing, setRefreshing] = useState(false);
 
   if (loading || !data) {
     return (
@@ -30,6 +35,22 @@ export default function BuildScreen() {
       </Screen>
     );
   }
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try { await refresh(); } finally { setRefreshing(false); }
+  };
+  const onPublish = async () => {
+    haptics.tap();
+    try {
+      await setPublished(!data.published);
+      haptics.success();
+      toast.show(data.published ? "Set to private" : "Published to web");
+    } catch {
+      haptics.warn();
+      toast.show("Couldn't update");
+    }
+  };
 
   const skillCount = data.skills.reduce((n, g) => n + g.items.length, 0);
   const sections = [
@@ -53,7 +74,7 @@ export default function BuildScreen() {
   const entries = data.projects.length + data.experiences.length + data.education.length;
 
   return (
-    <Screen contentStyle={{ paddingTop: t.space[4] }}>
+    <Screen contentStyle={{ paddingTop: t.space[4] }} refreshing={refreshing} onRefresh={onRefresh}>
       {/* Header */}
       <Appear index={0}>
         <Row justify="space-between">
@@ -182,7 +203,7 @@ export default function BuildScreen() {
             size="lg"
             full
             icon={data.published ? <Lock size={17} color={t.colors.ink} strokeWidth={1.75} /> : <Globe size={17} color={t.colors.ink} strokeWidth={1.75} />}
-            onPress={() => setPublished(!data.published)}
+            onPress={onPublish}
           />
         </View>
       </Appear>

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useFonts } from "expo-font";
 import {
   Inter_400Regular,
@@ -20,6 +21,8 @@ import { ClerkProvider } from "@clerk/clerk-expo";
 import { colors } from "@/theme";
 import { config, isAuthConfigured } from "@/lib/config";
 import { tokenCache } from "@/lib/token-cache";
+import { loadAndApplyThemeMode } from "@/lib/appearance";
+import { ToastProvider } from "@/ui/Toast";
 import { DemoPortfolioProvider } from "@/data/portfolio-context";
 import { ApiPortfolioProvider } from "@/data/portfolio-api-provider";
 import { AuthGate } from "@/components/auth/AuthGate";
@@ -53,15 +56,16 @@ export default function RootLayout() {
     JetBrainsMono_700Bold,
   });
 
+  useEffect(() => {
+    void loadAndApplyThemeMode();
+  }, []);
+
   if (!loaded) {
     return <View style={{ flex: 1, backgroundColor: colors[scheme].bg }} />;
   }
 
-  const content = isAuthConfigured ? (
-    <ClerkProvider
-      publishableKey={config.clerkPublishableKey}
-      tokenCache={tokenCache}
-    >
+  const tree = isAuthConfigured ? (
+    <ClerkProvider publishableKey={config.clerkPublishableKey} tokenCache={tokenCache}>
       <AuthGate>
         <ApiPortfolioProvider>
           <RootStack />
@@ -78,7 +82,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <StatusBar style={scheme === "dark" ? "light" : "dark"} />
-        {content}
+        <ToastProvider>{tree}</ToastProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
