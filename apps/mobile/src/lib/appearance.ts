@@ -4,7 +4,9 @@ import * as SecureStore from "expo-secure-store";
 export type ThemeMode = "system" | "light" | "dark";
 const KEY = "folio-theme-mode";
 
-let current: ThemeMode = "system";
+// Dark-first: the app opens dark out of the box. Users can still pick
+// light / system from Appearance settings, which persists their choice.
+let current: ThemeMode = "dark";
 export const getThemeMode = (): ThemeMode => current;
 
 function apply(mode: ThemeMode) {
@@ -35,3 +37,7 @@ export async function setThemeMode(mode: ThemeMode) {
     await SecureStore.setItemAsync(KEY, mode);
   } catch {}
 }
+
+// Apply the dark-first default synchronously on import, before the first
+// render, so the app never flashes light while the persisted value loads.
+apply(current);

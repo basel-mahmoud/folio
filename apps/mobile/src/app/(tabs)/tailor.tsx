@@ -1,10 +1,41 @@
 import { useState } from "react";
 import { View, StyleSheet } from "react-native";
-import { Sparkles, ArrowRight, Check, Target, AlertTriangle } from "lucide-react-native";
-import { Screen, Text, Surface, Row, Button, Field, Tag } from "@/ui";
-import { Appear } from "@/ui/motion";
+import {
+  Sparkles,
+  ArrowRight,
+  Check,
+  Target,
+  AlertTriangle,
+  ClipboardList,
+  Gauge,
+  PenLine,
+} from "lucide-react-native";
+import { Screen, Text, Surface, Row, Button, Field, Tag, Divider } from "@/ui";
+import { Appear, PressScale } from "@/ui/motion";
+import { haptics } from "@/lib/haptics";
 import { useTheme } from "@/theme";
 import { usePortfolio, type TailorResult } from "@/data/portfolio-context";
+
+const SAMPLES: { label: string; jd: string }[] = [
+  {
+    label: "Senior Frontend Engineer",
+    jd: "We're hiring a Senior Frontend Engineer to own our React + TypeScript web app. You'll ship accessible, performant UI, lead design-system work, mentor engineers, and partner closely with design. Requirements: 5+ years React, deep TypeScript, testing, Core Web Vitals, and a strong eye for craft.",
+  },
+  {
+    label: "Product Designer",
+    jd: "Product Designer to drive end-to-end design for a B2B SaaS platform. Own discovery, prototyping, and high-fidelity UI in Figma. Run usability tests, build and maintain a design system, and collaborate daily with PM and engineering. Requirements: strong portfolio, systems thinking, interaction and visual design.",
+  },
+  {
+    label: "ML Engineer",
+    jd: "ML Engineer to build and ship production machine-learning systems. Train, evaluate, and serve models; own data pipelines and MLOps; optimize latency and cost. Requirements: Python, PyTorch or TensorFlow, cloud (AWS/GCP), strong software engineering, and experience deploying models to production.",
+  },
+];
+
+const STEPS = [
+  { icon: ClipboardList, title: "Paste a job description", body: "Drop in the role's responsibilities and requirements." },
+  { icon: Gauge, title: "Folio scores your fit", body: "Gemini weighs the role against your real experience — never invented claims." },
+  { icon: PenLine, title: "Get tailored bullets", body: "Rewritten résumé bullets, plus the keywords you're missing." },
+];
 
 export default function TailorScreen() {
   const t = useTheme();
@@ -73,6 +104,72 @@ export default function TailorScreen() {
           ) : null}
         </View>
       </Appear>
+
+      {!result && !busy && (
+        <>
+          <Appear index={2} style={{ marginTop: t.space[8] }}>
+            <Text variant="label" style={{ marginBottom: t.space[3] }}>Or start from a sample</Text>
+            <Row gap={t.space[2]} wrap>
+              {SAMPLES.map((s) => (
+                <PressScale
+                  key={s.label}
+                  onPress={() => {
+                    haptics.tap();
+                    setError(null);
+                    setJd(s.jd);
+                  }}
+                >
+                  <Row
+                    gap={6}
+                    style={{
+                      borderColor: t.colors.border,
+                      borderWidth: StyleSheet.hairlineWidth,
+                      borderRadius: t.radius.full,
+                      paddingHorizontal: t.space[3],
+                      paddingVertical: 8,
+                      backgroundColor: t.colors.surfaceAlt,
+                    }}
+                  >
+                    <Sparkles size={13} color={t.colors.accent} strokeWidth={2} />
+                    <Text variant="small" style={{ color: t.colors.ink }}>{s.label}</Text>
+                  </Row>
+                </PressScale>
+              ))}
+            </Row>
+          </Appear>
+
+          <Appear index={3} style={{ marginTop: t.space[10] }}>
+            <Text variant="label" style={{ marginBottom: t.space[4] }}>How it works</Text>
+            <View>
+              {STEPS.map((step, i) => (
+                <View key={step.title}>
+                  {i > 0 && <Divider inset={52} />}
+                  <Row gap={t.space[4]} align="flex-start" style={{ paddingVertical: t.space[3] }}>
+                    <View
+                      style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: t.radius.md,
+                        backgroundColor: t.colors.accentSoft,
+                        borderColor: t.colors.accentBorder,
+                        borderWidth: StyleSheet.hairlineWidth,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <step.icon size={16} color={t.colors.accent} strokeWidth={1.75} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text variant="bodyStrong">{step.title}</Text>
+                      <Text variant="caption" style={{ marginTop: 2 }}>{step.body}</Text>
+                    </View>
+                  </Row>
+                </View>
+              ))}
+            </View>
+          </Appear>
+        </>
+      )}
 
       {result && (
         <View style={{ marginTop: t.space[10], gap: t.space[5] }}>
