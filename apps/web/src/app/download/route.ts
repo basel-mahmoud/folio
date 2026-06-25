@@ -9,7 +9,7 @@ export const maxDuration = 60;
 
 const APK_URL =
   process.env.EXPO_APK_URL ??
-  "https://expo.dev/artifacts/eas/AxcvZS-WHVKedPv5nOf-DpRhxx8CZEKjc_iPq0flKA4.apk";
+  "https://expo.dev/artifacts/eas/QUbQC1Wg2ki7PHOPWYxB1m3yRTe9QPwLeP6f1pa_sgE.apk";
 
 export async function GET() {
   const upstream = await fetch(APK_URL, { redirect: "follow" });
