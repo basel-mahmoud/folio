@@ -15,6 +15,7 @@ import {
 } from "lucide-react-native";
 import { Screen, Text, Surface, Row, Button, Divider } from "@/ui";
 import { Avatar, initialsOf } from "@/ui/Avatar";
+import { Logo } from "@/ui/Logo";
 import { Appear, PressScale, AnimatedProgress } from "@/ui/motion";
 import { useTheme } from "@/theme";
 import { useToast } from "@/ui/Toast";
@@ -79,7 +80,7 @@ export default function BuildScreen() {
       <Appear index={0}>
         <Row justify="space-between">
           <Row gap={t.space[2.5]}>
-            <View style={{ width: 18, height: 18, borderRadius: 5, backgroundColor: t.colors.accent }} />
+            <Logo size={20} />
             <Text style={{ fontFamily: t.font.mono.bold, fontSize: 15, letterSpacing: 2.5, color: t.colors.ink }}>
               FOLIO
             </Text>

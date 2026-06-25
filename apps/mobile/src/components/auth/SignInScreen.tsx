@@ -5,6 +5,7 @@ import * as Linking from "expo-linking";
 import { useSignIn, useSignUp, useSSO } from "@clerk/clerk-expo";
 import { Mail, ArrowRight } from "lucide-react-native";
 import { Screen, Text, Field, Button, Row } from "@/ui";
+import { Logo } from "@/ui/Logo";
 import { useTheme } from "@/theme";
 
 WebBrowser.maybeCompleteAuthSession();
@@ -92,7 +93,7 @@ export function SignInScreen() {
     <Screen scroll={false} contentStyle={{ flex: 1, justifyContent: "center", paddingTop: 0 }}>
       <View style={{ alignItems: "center", marginBottom: t.space[10] }}>
         <Row gap={t.space[2.5]}>
-          <View style={{ width: 18, height: 18, borderRadius: 5, backgroundColor: t.colors.accent }} />
+          <Logo size={22} />
           <Text style={{ fontFamily: t.font.mono.bold, fontSize: 16, letterSpacing: 2.5, color: t.colors.ink }}>
             FOLIO
           </Text>
