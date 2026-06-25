@@ -33,8 +33,9 @@ const mark = (r) =>
   `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${W}" viewBox="0 0 ${W} ${W}">` +
   `<path d="${cardPath(r)}" fill="${COBALT}"/>${flap}${fRects(WHITE)}</svg>`;
 
-// Adaptive icon pieces
-const bgSolid = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${W}"><rect width="${W}" height="${W}" fill="${COBALT}"/></svg>`;
+// Adaptive icon pieces. Background includes the folded corner so the Android
+// launcher icon matches the web mark (the F foreground is a separate layer).
+const bgSolid = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${W}" viewBox="0 0 ${W} ${W}"><rect width="${W}" height="${W}" fill="${COBALT}"/>${flap}</svg>`;
 const fgF = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${W}" viewBox="0 0 ${W} ${W}"><g transform="translate(512 512) scale(0.6) translate(-512 -512)">${fRects(WHITE)}</g></svg>`;
 
 async function out(source, rel, size) {
