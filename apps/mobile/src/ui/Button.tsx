@@ -1,4 +1,5 @@
 import { Pressable, ActivityIndicator, StyleSheet, View } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { Text } from "./Text";
 import { useTheme } from "@/theme";
 
@@ -29,22 +30,18 @@ export function Button({
   const px = size === "sm" ? t.space[3] : t.space[4];
   const fontSize = size === "lg" ? t.size.md : t.size.base;
 
+  const isGradient = variant === "primary";
   const bg =
-    variant === "primary"
-      ? t.colors.accent
-      : variant === "danger"
-        ? t.colors.danger
-        : "transparent";
+    variant === "danger" ? t.colors.danger : variant === "primary" ? "transparent" : "transparent";
   const labelColor =
-    variant === "primary" || variant === "danger"
-      ? variant === "primary"
-        ? t.colors.accentInk
-        : "#fff"
-      : variant === "ghost"
-        ? t.colors.inkDim
-        : t.colors.ink;
-  const borderColor =
-    variant === "secondary" ? t.colors.borderStrong : "transparent";
+    variant === "primary"
+      ? t.colors.accentInk
+      : variant === "danger"
+        ? "#fff"
+        : variant === "ghost"
+          ? t.colors.inkDim
+          : t.colors.ink;
+  const borderColor = variant === "secondary" ? t.colors.borderStrong : "transparent";
 
   return (
     <Pressable
@@ -63,11 +60,20 @@ export function Button({
           justifyContent: "center",
           gap: t.space[2],
           alignSelf: full ? "stretch" : "flex-start",
-          opacity: disabled ? 0.4 : pressed ? 0.82 : 1,
+          overflow: "hidden",
+          opacity: disabled ? 0.4 : pressed ? 0.9 : 1,
           transform: [{ scale: pressed ? 0.985 : 1 }],
         },
       ]}
     >
+      {isGradient && (
+        <LinearGradient
+          colors={[t.colors.accent, "#8b6cff"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={StyleSheet.absoluteFill}
+        />
+      )}
       {loading ? (
         <ActivityIndicator size="small" color={labelColor} />
       ) : (

@@ -1,8 +1,9 @@
-import { View, StyleSheet } from "react-native";
+import { View } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { Text } from "./Text";
 import { useTheme } from "@/theme";
 
-/** Square, hairline-bordered initials avatar. */
+/** Square initials avatar with a subtle gradient ring. */
 export function Avatar({
   initials,
   size = 56,
@@ -12,29 +13,38 @@ export function Avatar({
 }) {
   const t = useTheme();
   return (
-    <View
+    <LinearGradient
+      colors={[t.colors.accent, "#8b6cff", "#43e3c0"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
       style={{
         width: size,
         height: size,
-        borderRadius: t.radius.md,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: t.colors.borderStrong,
-        backgroundColor: t.colors.surfaceAlt,
-        alignItems: "center",
-        justifyContent: "center",
+        borderRadius: t.radius.md + 2,
+        padding: 1.5,
       }}
     >
-      <Text
+      <View
         style={{
-          fontFamily: t.font.mono.semibold,
-          fontSize: size * 0.32,
-          color: t.colors.ink,
-          letterSpacing: 0.5,
+          flex: 1,
+          borderRadius: t.radius.md,
+          backgroundColor: t.colors.surfaceAlt,
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        {initials}
-      </Text>
-    </View>
+        <Text
+          style={{
+            fontFamily: t.font.mono.semibold,
+            fontSize: size * 0.3,
+            color: t.colors.ink,
+            letterSpacing: 0.5,
+          }}
+        >
+          {initials}
+        </Text>
+      </View>
+    </LinearGradient>
   );
 }
 
