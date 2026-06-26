@@ -14,6 +14,12 @@ function monthYear(v: string | null): string {
   return `${months[Number(m) - 1]} ${y}`;
 }
 
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+  return (name.slice(0, 2) || "··").toUpperCase();
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -33,11 +39,11 @@ export async function generateMetadata({
   };
 }
 
-function Marker({ index, label }: { index: string; label: string }) {
+/** Plain section heading + trailing hairline. No numbered scaffolding. */
+function SectionHead({ label }: { label: string }) {
   return (
-    <div className="mb-6 flex items-center gap-3">
-      <span className="font-mono text-xs text-accent">{index}</span>
-      <span className="font-mono text-xs uppercase tracking-[0.18em] text-muted">{label}</span>
+    <div className="mb-7 flex items-center gap-4">
+      <h2 className="text-lg font-semibold tracking-tight text-ink">{label}</h2>
       <span className="h-px flex-1 bg-border" />
     </div>
   );
@@ -53,20 +59,23 @@ export default async function PublicPortfolio({
   if (!bundle) notFound();
   const { portfolio: p, projects, experiences, education, skills } = bundle;
 
-  let n = 1;
-  const next = () => String(++n).padStart(2, "0");
-
   return (
-    <main className="mx-auto max-w-2xl px-6 py-16 sm:py-24">
+    <main className="relative mx-auto max-w-2xl px-6 py-16 sm:py-24">
+      <div className="grad-hairline absolute inset-x-0 top-0" />
+
       {/* Identity */}
       <header className="rise">
-        {!!p.headline && (
-          <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent">{p.headline}</p>
-        )}
-        <h1 className="mt-3 text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
-          {p.name || handle}
-        </h1>
-        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[13px]">
+        <div className="flex items-center gap-4">
+          <div className="tile-accent flex h-14 w-14 shrink-0 items-center justify-center rounded-[15px]">
+            <span className="font-mono text-base font-semibold text-ink">{initials(p.name || handle)}</span>
+          </div>
+          <div>
+            <h1 className="text-3xl font-semibold tracking-[-0.02em] text-ink sm:text-4xl">{p.name || handle}</h1>
+            {!!p.headline && <p className="mt-1 text-[15px] text-ink-dim">{p.headline}</p>}
+          </div>
+        </div>
+
+        <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[13px]">
           {!!p.location && <span className="text-muted">{p.location}</span>}
           {p.links.map((l) => (
             <a
@@ -81,12 +90,12 @@ export default async function PublicPortfolio({
             </a>
           ))}
         </div>
-        {!!p.bio && <p className="mt-6 text-[15px] leading-relaxed text-ink-dim">{p.bio}</p>}
+
+        {!!p.bio && <p className="mt-6 max-w-prose text-[15px] leading-relaxed text-ink-dim">{p.bio}</p>}
 
         <a
           href={`/u/${p.handle}/cv`}
-          className="font-mono mt-7 inline-flex items-center gap-2 rounded-[var(--border-radius-md,10px)] border border-border-strong px-3.5 py-2 text-[13px] text-ink transition-colors hover:bg-surface-2"
-          style={{ borderRadius: 10 }}
+          className="btn-grad mt-7 inline-flex items-center gap-2 rounded-[10px] px-4 py-2 text-[13px] font-medium"
         >
           <FileDown size={14} />
           Download CV
@@ -95,7 +104,7 @@ export default async function PublicPortfolio({
 
       {projects.length > 0 && (
         <section className="mt-20 rise">
-          <Marker index="02" label="Selected work" />
+          <SectionHead label="Selected work" />
           <div className="space-y-8">
             {projects.map((proj) => (
               <article key={proj.id}>
@@ -122,7 +131,7 @@ export default async function PublicPortfolio({
 
       {experiences.length > 0 && (
         <section className="mt-20 rise">
-          <Marker index={next()} label="Experience" />
+          <SectionHead label="Experience" />
           <div className="divide-y divide-[var(--border)]">
             {experiences.map((e) => (
               <div key={e.id} className="py-5 first:pt-0">
@@ -142,7 +151,7 @@ export default async function PublicPortfolio({
 
       {skills.length > 0 && (
         <section className="mt-20 rise">
-          <Marker index={next()} label="Skills" />
+          <SectionHead label="Skills" />
           <div className="space-y-4">
             {skills.map((g) => (
               <div key={g.id}>
@@ -160,7 +169,7 @@ export default async function PublicPortfolio({
 
       {education.length > 0 && (
         <section className="mt-20 rise">
-          <Marker index={next()} label="Education" />
+          <SectionHead label="Education" />
           <div className="space-y-3">
             {education.map((ed) => (
               <div key={ed.id} className="flex items-start justify-between gap-4">
