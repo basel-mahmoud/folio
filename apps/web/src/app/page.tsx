@@ -1,37 +1,51 @@
 import Link from "next/link";
 import {
-  ArrowRight,
   ArrowUpRight,
   Download,
   Smartphone,
   Wand2,
-  FileText,
   Share2,
   ShieldCheck,
   LayoutGrid,
+  RefreshCw,
   Check,
 } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { Reveal } from "@/components/reveal";
-import { RotatingWord } from "@/components/rotating-word";
-import { CountUp } from "@/components/count-up";
+import { Hero } from "@/components/hero";
+import { Device } from "@/components/device";
+import { CtaButton } from "@/components/cta-button";
 
-const features = [
-  { icon: LayoutGrid, title: "Live native builder", body: "Compose your profile, projects, experience and skills in a fast mobile app with an instant preview." },
-  { icon: Wand2, title: "AI that writes with you", body: "Gemini polishes your bio and project write-ups and tailors your CV to any job — using only your real experience." },
-  { icon: FileText, title: "Modern + Harvard résumés", body: "Export a clean, recruiter-ready PDF — including an exact Harvard-format résumé — from the same structured data." },
-  { icon: Share2, title: "A shareable web home", body: "Publish to folio.app/u/you — a fast, accessible page you can put on every application." },
-  { icon: ShieldCheck, title: "Private by design", body: "Row-level data isolation, full export, and one-click account deletion. Your data is yours." },
-  { icon: Smartphone, title: "Real Android app", body: "Not a wrapper — a native Expo build you install as an APK, backed by a typed, hardened API." },
+const capabilities = [
+  {
+    icon: LayoutGrid,
+    title: "Live native builder",
+    body: "Compose profile, projects, experience and skills in a fast mobile app with an instant preview.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Private by design",
+    body: "Row-level data isolation, full export, and one-click account deletion. Your data is yours.",
+  },
+  {
+    icon: Smartphone,
+    title: "A real Android app",
+    body: "Not a wrapper — a native Expo build you install as an APK, backed by a typed, hardened API.",
+  },
+  {
+    icon: RefreshCw,
+    title: "Always in sync",
+    body: "Your web page and both résumé formats regenerate from one source of truth, instantly.",
+  },
 ];
 
 const steps = [
-  { n: "01", t: "Install the app", b: "Download the APK and sign in. Pick your handle — that's your public URL." },
-  { n: "02", t: "Build & polish", b: "Add your work, then let AI sharpen the words. Watch the preview update live." },
-  { n: "03", t: "Share & tailor", b: "Publish your page, export a Modern or Harvard CV, and re-tailor for each role." },
+  { n: "1", t: "Install the app", b: "Download the APK and sign in. Pick your handle — that becomes your public URL." },
+  { n: "2", t: "Build & polish", b: "Add your work, then let AI sharpen the words. The preview updates live." },
+  { n: "3", t: "Share & tailor", b: "Publish your page, export a Modern or Harvard CV, and re-tailor for each role." },
 ];
 
-const TECH = ["Next.js 16","React Native","Expo","Neon Postgres","Drizzle ORM","Clerk","Gemini","TypeScript","Reanimated","Row-level security","Vercel"];
+const TECH = ["Next.js 16", "React Native", "Expo", "Neon Postgres", "Drizzle ORM", "Clerk", "Gemini", "TypeScript", "Reanimated", "Row-level security", "Vercel"];
 
 function Wordmark() {
   return (
@@ -45,75 +59,30 @@ function Wordmark() {
 export default function Home() {
   return (
     <main className="relative overflow-clip">
+      <div className="grad-hairline" />
+
       {/* Nav */}
       <header className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur">
         <nav className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
           <Wordmark />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <Link href="/u/basel" className="hidden rounded-[8px] px-3 py-2 text-sm text-ink-dim transition-colors hover:text-ink sm:block">Live example</Link>
             <a href="https://github.com/basel-mahmoud/folio" className="hidden rounded-[8px] px-3 py-2 text-sm text-ink-dim transition-colors hover:text-ink sm:block">GitHub</a>
-            <a href="/download" className="inline-flex items-center gap-1.5 rounded-[8px] bg-accent px-3.5 py-2 text-sm font-medium text-[#fff] transition-transform hover:-translate-y-px">
+            <a href="/download" className="btn-grad ml-1 inline-flex items-center gap-1.5 rounded-[9px] px-3.5 py-2 text-sm font-medium">
               <Download size={15} /> Download
             </a>
           </div>
         </nav>
       </header>
 
-      {/* Hero */}
-      <section className="mx-auto max-w-5xl px-6 pt-20 pb-14 sm:pt-28">
-        <div className="rise mx-auto max-w-3xl text-center">
-          <span className="font-mono inline-flex items-center gap-2 rounded-full border border-border-strong px-3 py-1 text-xs uppercase tracking-[0.16em] text-ink-dim">
-            <span className="h-1.5 w-1.5 rounded-full bg-accent" /> AI portfolio &amp; CV builder
-          </span>
-          <h1 className="mt-6 text-balance text-5xl font-semibold leading-[1.05] tracking-tight text-ink sm:text-6xl">
-            Your work, presented
-            <br className="hidden sm:block" /> with intent.
-          </h1>
-          <p className="mx-auto mt-6 max-w-xl text-pretty text-base leading-relaxed text-ink-dim sm:text-lg">
-            Build a live portfolio in a native app, let AI polish every word, and
-            tailor your CV — Modern or Harvard — to any job.
-          </p>
-          <p className="font-mono mt-4 text-sm text-muted">
-            Made for{" "}
-            <RotatingWord words={["software engineers", "designers", "new grads", "career switchers", "product managers"]} />
-          </p>
-          <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <a href="/download" className="inline-flex w-full items-center justify-center gap-2 rounded-[10px] bg-accent px-6 py-3 text-[15px] font-medium text-[#fff] transition-transform hover:-translate-y-px sm:w-auto">
-              <Download size={17} /> Download the app
-            </a>
-            <Link href="/u/basel" className="inline-flex w-full items-center justify-center gap-2 rounded-[10px] border border-border-strong px-6 py-3 text-[15px] text-ink transition-colors hover:bg-surface-2 sm:w-auto">
-              See a live example <ArrowRight size={16} />
-            </Link>
-          </div>
-          <p className="font-mono mt-4 text-xs text-faint">Android APK · free · export anytime</p>
-        </div>
-
-        {/* Floating preview mock */}
-        <div className="rise mx-auto mt-16 max-w-2xl" style={{ animationDelay: "0.15s" }}>
-          <div className="floaty overflow-hidden rounded-[16px] border border-border-strong bg-surface shadow-[0_24px_60px_-30px_rgba(0,0,0,0.6)]">
-            <div className="flex items-center gap-2 border-b border-border px-4 py-3">
-              <span className="h-1.5 w-1.5 rounded-full bg-success" />
-              <span className="font-mono text-xs text-muted">folio.app/u/basel</span>
-            </div>
-            <div className="p-7">
-              <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent">Full-stack engineer</p>
-              <h3 className="mt-2 text-3xl font-semibold tracking-tight text-ink">Basel Mahmoud</h3>
-              <p className="mt-3 text-sm leading-relaxed text-ink-dim">
-                I build production-grade web and mobile apps — secure, tested and
-                fast. Recently shipped multi-tenant SaaS with AI integrations.
-              </p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {["Next.js", "React Native", "Postgres", "AI"].map((t) => (
-                  <span key={t} className="font-mono rounded-[6px] border border-border-strong px-2 py-0.5 text-[11px] text-ink-dim">{t}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Hero (orchestrated motion + real app screenshot) */}
+      <Hero />
 
       {/* Tech marquee */}
-      <div className="overflow-hidden border-y border-border py-4">
+      <div
+        className="overflow-hidden border-y border-border py-4"
+        style={{ maskImage: "linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent)" }}
+      >
         <div className="marquee-track">
           {[0, 1].map((k) => (
             <div key={k} className="flex items-center gap-7 pr-7" aria-hidden={k === 1}>
@@ -128,100 +97,158 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Stats */}
-      <section className="mx-auto max-w-5xl px-6 py-16">
-        <Reveal>
-          <div className="grid grid-cols-2 gap-px overflow-hidden rounded-[16px] border border-border bg-border sm:grid-cols-4">
-            {[
-              { v: <CountUp value={2} />, l: "Résumé templates" },
-              { v: <CountUp value={60} suffix="s" />, l: "To a live page" },
-              { v: <CountUp value={100} suffix="%" />, l: "Your data, exportable" },
-              { v: <span>$0</span>, l: "To get started" },
-            ].map((s, i) => (
-              <div key={i} className="bg-surface px-5 py-7 text-center">
-                <div className="font-mono text-3xl font-bold text-ink">{s.v}</div>
-                <div className="mt-1 text-xs text-muted">{s.l}</div>
-              </div>
-            ))}
-          </div>
-        </Reveal>
-      </section>
-
-      {/* Features */}
-      <section id="features" className="mx-auto max-w-5xl px-6 py-16">
+      {/* Section lead */}
+      <section className="mx-auto max-w-5xl px-6 pt-20 pb-4">
         <Reveal className="max-w-2xl">
-          <h2 className="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">Everything you need to stand out.</h2>
-          <p className="mt-3 text-ink-dim">A portfolio, a CV, and an AI writing partner — in one calm, fast place.</p>
+          <h2 className="text-balance text-3xl font-semibold tracking-[-0.02em] text-ink sm:text-[2.6rem] sm:leading-[1.1]">
+            Not a description of an app. The app itself.
+          </h2>
+          <p className="mt-4 max-w-lg text-pretty text-ink-dim">
+            Every screen below is the real product — the same build you install. Here&apos;s what it does.
+          </p>
         </Reveal>
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((f, i) => (
-            <Reveal key={f.title} delay={(i % 3) * 0.08}>
-              <article className="lift h-full rounded-[16px] border border-border bg-surface p-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-[8px] border border-border-strong">
-                  <f.icon size={18} className="text-accent" />
-                </div>
-                <h3 className="mt-4 font-semibold text-ink">{f.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-ink-dim">{f.body}</p>
-              </article>
-            </Reveal>
-          ))}
-        </div>
       </section>
 
-      {/* How it works */}
-      <section className="mx-auto max-w-5xl px-6 py-16">
-        <Reveal><h2 className="text-center text-3xl font-semibold tracking-tight text-ink sm:text-4xl">Live in three steps.</h2></Reveal>
-        <div className="mt-12 grid gap-4 md:grid-cols-3">
-          {steps.map((s, i) => (
-            <Reveal key={s.n} delay={i * 0.08}>
-              <div className="lift h-full rounded-[16px] border border-border bg-surface p-6">
-                <span className="font-mono text-sm text-accent">{s.n}</span>
-                <h3 className="mt-3 text-xl font-semibold text-ink">{s.t}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-ink-dim">{s.b}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* Résumé templates */}
-      <section className="mx-auto max-w-5xl px-6 py-16">
-        <div className="grid items-center gap-10 lg:grid-cols-2">
+      {/* Feature row 1 — AI (text / device) */}
+      <section className="mx-auto max-w-5xl px-6 py-12">
+        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
           <Reveal>
-            <span className="font-mono text-xs uppercase tracking-[0.16em] text-accent">Résumé templates</span>
-            <h2 className="mt-4 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">One profile. Two recruiter-ready CVs.</h2>
-            <p className="mt-4 text-ink-dim">Export a clean modern résumé or an exact, ATS-friendly Harvard-format résumé — both generated from the same data and downloadable as PDF.</p>
-            <ul className="mt-6 space-y-3">
-              {["Exact Harvard one-page layout", "Modern editorial layout", "Save-as-PDF from any browser", "Always in sync with your portfolio"].map((t) => (
-                <li key={t} className="flex items-start gap-3 text-sm"><Check size={17} className="mt-0.5 shrink-0 text-accent" /><span className="text-ink-dim">{t}</span></li>
+            <div className="tile-accent inline-flex h-11 w-11 items-center justify-center rounded-[12px]">
+              <Wand2 size={20} className="text-accent" />
+            </div>
+            <h3 className="mt-5 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">AI that writes with you.</h3>
+            <p className="mt-3 max-w-md text-pretty leading-relaxed text-ink-dim">
+              Gemini polishes your bio and project write-ups, scores your fit against a job, and rewrites
+              your bullets to match — using only your real experience. Never invented claims.
+            </p>
+            <ul className="mt-5 space-y-2.5">
+              {["Tailor your CV to any role in seconds", "A match score with concrete gaps to close", "Before → after rewrites you can accept or skip"].map((t) => (
+                <li key={t} className="flex items-start gap-2.5 text-sm text-ink-dim">
+                  <Check size={16} className="mt-0.5 shrink-0 text-accent" /> {t}
+                </li>
               ))}
             </ul>
-            <Link href="/u/basel/cv?template=harvard" className="font-mono mt-7 inline-flex items-center gap-1.5 text-sm text-ink transition-colors hover:text-accent">View a Harvard CV <ArrowUpRight size={14} className="text-faint" /></Link>
           </Reveal>
           <Reveal delay={0.1}>
-            <div className="rounded-[16px] border border-border bg-surface p-5">
-              <div className="rounded-[10px] bg-[#fff] p-6 text-[#111]">
-                <p className="text-center text-lg font-semibold">Basel Mahmoud</p>
+            <Device src="/app/tailor.png" alt="Folio's Tailor screen — paste a job description, pick a sample role, and see how AI tailors the CV" parallax maxWidth={272} />
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Feature row 2 — Web page (device / text) */}
+      <section className="mx-auto max-w-5xl px-6 py-12">
+        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+          <Reveal className="order-2 lg:order-1">
+            <Device src="/app/preview.png" alt="Folio's portfolio preview — name, headline, bio, and selected work with tech tags" parallax maxWidth={272} />
+          </Reveal>
+          <Reveal delay={0.1} className="order-1 lg:order-2">
+            <div className="tile-accent inline-flex h-11 w-11 items-center justify-center rounded-[12px]">
+              <Share2 size={20} className="text-accent" />
+            </div>
+            <h3 className="mt-5 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">A web home you can share anywhere.</h3>
+            <p className="mt-3 max-w-md text-pretty leading-relaxed text-ink-dim">
+              Publish to a fast, accessible page at your own handle. Drop it on every application, in your
+              email signature, on LinkedIn.
+            </p>
+            <div className="font-mono mt-5 inline-flex items-center gap-2 rounded-[9px] border border-border-strong bg-surface px-3 py-2 text-sm text-ink-dim">
+              <span className="h-1.5 w-1.5 rounded-full bg-success" /> folio.app/u/<span className="text-ink">you</span>
+            </div>
+            <div className="mt-6">
+              <Link href="/u/basel" className="font-mono inline-flex items-center gap-1.5 text-sm text-ink transition-colors hover:text-accent">
+                Open a live example <ArrowUpRight size={14} className="text-faint" />
+              </Link>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Feature row 3 — Résumés (text / CV asset) */}
+      <section className="mx-auto max-w-5xl px-6 py-12">
+        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+          <Reveal>
+            <div className="tile-accent inline-flex h-11 w-11 items-center justify-center rounded-[12px]">
+              <Download size={20} className="text-accent" />
+            </div>
+            <h3 className="mt-5 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">One profile. Two recruiter-ready CVs.</h3>
+            <p className="mt-3 max-w-md text-pretty leading-relaxed text-ink-dim">
+              Export a clean modern résumé or an exact, ATS-friendly Harvard-format résumé — both generated
+              from the same data and downloadable as PDF.
+            </p>
+            <ul className="mt-5 grid grid-cols-2 gap-x-6 gap-y-2.5">
+              {["Exact Harvard one-page layout", "Modern editorial layout", "Save-as-PDF anywhere", "Always in sync"].map((t) => (
+                <li key={t} className="flex items-start gap-2.5 text-sm text-ink-dim">
+                  <Check size={16} className="mt-0.5 shrink-0 text-accent" /> {t}
+                </li>
+              ))}
+            </ul>
+            <Link href="/u/basel/cv?template=harvard" className="font-mono mt-6 inline-flex items-center gap-1.5 text-sm text-ink transition-colors hover:text-accent">
+              View a Harvard CV <ArrowUpRight size={14} className="text-faint" />
+            </Link>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <div className="lift rounded-[16px] border border-border bg-surface p-5">
+              <div className="rounded-[10px] bg-[#fff] p-7 text-[#111] shadow-[0_20px_50px_-30px_rgba(0,0,0,0.7)]">
+                <p className="text-center text-lg font-semibold tracking-tight">Basel Mahmoud</p>
                 <p className="text-center text-[11px] text-[#555]">Amman, Jordan · github.com/basel-mahmoud · hello@basel.dev</p>
-                <div className="mt-3 border-t border-[#222] pt-2 text-[10px] uppercase tracking-widest text-[#666]">Education</div>
-                <p className="mt-1 text-[11px]"><b>University of Jordan</b> — B.Sc. Computer Science</p>
-                <div className="mt-2 border-t border-[#ddd] pt-2 text-[10px] uppercase tracking-widest text-[#666]">Experience</div>
-                <p className="mt-1 text-[11px]"><b>Full-stack engineer</b> · Independent</p>
-                <p className="text-[10px] text-[#555]">Design, build and ship end-to-end products with tests and CI/CD.</p>
+                <div className="mt-4 border-t border-[#222] pt-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#444]">Education</div>
+                <p className="mt-1.5 text-[11px]"><b>University of Jordan</b> — B.Sc. Computer Science</p>
+                <div className="mt-3 border-t border-[#222] pt-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#444]">Experience</div>
+                <p className="mt-1.5 text-[11px]"><b>Full-stack engineer</b> · Independent</p>
+                <p className="text-[10px] leading-relaxed text-[#555]">Design, build and ship end-to-end products with tests and CI/CD.</p>
+                <p className="text-[10px] leading-relaxed text-[#555]">Multi-tenant SaaS with row-level security and AI integrations.</p>
               </div>
             </div>
           </Reveal>
         </div>
       </section>
 
-      {/* CTA */}
+      {/* Capabilities — typographic spec list, not cards */}
+      <section className="mx-auto max-w-5xl px-6 pt-16 pb-8">
+        <Reveal className="max-w-2xl">
+          <h2 className="text-balance text-3xl font-semibold tracking-[-0.02em] text-ink sm:text-[2.6rem] sm:leading-[1.1]">Built like production software.</h2>
+          <p className="mt-4 max-w-lg text-pretty text-ink-dim">Because it is. The same hardening that ships in real products — applied to your portfolio.</p>
+        </Reveal>
+        <div className="mt-10 grid gap-x-12 gap-y-9 sm:grid-cols-2">
+          {capabilities.map((c, i) => (
+            <Reveal key={c.title} delay={(i % 2) * 0.08}>
+              <div className="flex gap-4 border-t border-border pt-6">
+                <c.icon size={20} className="mt-0.5 shrink-0 text-accent" strokeWidth={1.75} />
+                <div>
+                  <h3 className="font-semibold text-ink">{c.title}</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-ink-dim">{c.body}</p>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* How it works — sequenced timeline (numbers earn their place) */}
       <section className="mx-auto max-w-5xl px-6 py-20">
+        <Reveal><h2 className="text-center text-3xl font-semibold tracking-[-0.02em] text-ink sm:text-4xl">Live in three steps.</h2></Reveal>
+        <div className="relative mt-14">
+          <div className="grad-hairline absolute left-0 right-0 top-5 hidden opacity-30 md:block" />
+          <div className="grid gap-10 md:grid-cols-3 md:gap-8">
+            {steps.map((s, i) => (
+              <Reveal key={s.n} delay={i * 0.1}>
+                <div className="tile-accent relative z-10 flex h-10 w-10 items-center justify-center rounded-full bg-bg font-mono text-sm font-semibold text-ink">{s.n}</div>
+                <h3 className="mt-5 text-xl font-semibold text-ink">{s.t}</h3>
+                <p className="mt-2 max-w-xs text-sm leading-relaxed text-ink-dim">{s.b}</p>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="mx-auto max-w-5xl px-6 pb-24">
         <Reveal>
-          <div className="rounded-[20px] border border-border-strong bg-surface p-10 text-center sm:p-16">
-            <h2 className="mx-auto max-w-xl text-3xl font-semibold tracking-tight text-ink sm:text-4xl">Make the page that gets you hired.</h2>
+          <div className="relative overflow-hidden rounded-[22px] border border-border-strong bg-surface p-10 text-center sm:p-16">
+            <div className="grad-hairline absolute inset-x-0 top-0" />
+            <h2 className="mx-auto max-w-xl text-balance text-3xl font-semibold tracking-[-0.02em] text-ink sm:text-4xl">Make the page that gets you hired.</h2>
             <p className="mx-auto mt-3 max-w-md text-ink-dim">Install the app, build your portfolio, share it anywhere.</p>
-            <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <a href="/download" className="inline-flex items-center justify-center gap-2 rounded-[10px] bg-accent px-6 py-3 text-[15px] font-medium text-[#fff] transition-transform hover:-translate-y-px"><Download size={17} /> Download the APK</a>
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <CtaButton href="/download"><Download size={17} /> Download the APK</CtaButton>
               <Link href="/u/basel" className="font-mono text-sm text-ink-dim transition-colors hover:text-ink">or see a live example →</Link>
             </div>
           </div>

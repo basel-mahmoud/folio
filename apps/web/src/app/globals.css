@@ -20,6 +20,11 @@
   --faint: #56565e;
   --accent: #5277ff;
   --accent-ink: #ffffff;
+  --success: #43e3c0;
+  --warning: #e0a93a;
+  /* Brand gradient — voice, not decoration. Mark, primary CTAs, product imagery.
+     Never a background blob, never background-clip:text. Matches the native app. */
+  --grad: linear-gradient(135deg, #5277ff 0%, #8b6cff 55%, #43e3c0 100%);
 }
 
 @theme inline {
@@ -35,6 +40,8 @@
   --color-faint: var(--faint);
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-mono-jb), ui-monospace, monospace;
@@ -121,6 +128,41 @@ body {
   border-color: var(--border-strong);
 }
 
+/* Brand-gradient primary action. Solid gradient FILL (matches the app's button),
+   no glow. Hover handled by motion / transform. */
+.btn-grad {
+  background-image: var(--grad);
+  color: #fff;
+  background-size: 140% 140%;
+  background-position: 0% 50%;
+  transition: background-position 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-grad:hover {
+  background-position: 100% 50%;
+}
+
+/* Hairline that carries the brand gradient — used as a 1px section divider/top rule. */
+.grad-hairline {
+  height: 1px;
+  background-image: var(--grad);
+  opacity: 0.7;
+}
+
+/* Device frame shadow — depth, not glow. */
+.device-shadow {
+  box-shadow:
+    0 2px 8px -2px rgba(0, 0, 0, 0.5),
+    0 30px 80px -40px rgba(0, 0, 0, 0.85);
+}
+
+/* Hairline tile for capability rows (no cards, just structure). */
+.tile-accent {
+  background:
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    var(--grad) border-box;
+  border: 1px solid transparent;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
@@ -128,4 +170,5 @@ body {
     transition-duration: 0.001ms !important;
   }
   .reveal { opacity: 1; transform: none; }
+  .floaty { animation: none; }
 }
