@@ -6,8 +6,8 @@ import { PrintButton } from "@/components/print-button";
 export const dynamic = "force-dynamic";
 
 const SERIF = "Georgia, 'Times New Roman', Times, serif";
-const SANS = "var(--font-sans)";
-const MONO = "var(--font-mono)";
+const SANS = "var(--font-inter), ui-sans-serif, system-ui, sans-serif";
+const MONO = "var(--font-mono-jb), ui-monospace, monospace";
 const INK = "#111114";
 const DIM = "#3a3a40";
 const MUTED = "#6b6b73";

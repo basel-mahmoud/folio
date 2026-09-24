@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Mona_Sans } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
@@ -12,6 +12,13 @@ const inter = Inter({
 const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono-jb",
+  display: "swap",
+});
+/** Display voice for headlines only (variable width axis). */
+const mona = Mona_Sans({
+  subsets: ["latin"],
+  axes: ["wdth"],
+  variable: "--font-mona",
   display: "swap",
 });
 
@@ -50,8 +57,12 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`${inter.variable} ${jetbrains.variable} antialiased`}>
+    <html lang="en" className={`dark ${inter.variable} ${jetbrains.variable} ${mona.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Progressive enhancement: reveal-on-scroll hidden states only apply once JS runs. */}
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
+      </head>
+      <body className="antialiased">
         <AppProviders>{children}</AppProviders>
         <Analytics />
       </body>

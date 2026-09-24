@@ -40,6 +40,8 @@ export function Reveal({
       ref={ref}
       className={`reveal${shown ? " in" : ""}${className ? " " + className : ""}`}
       style={{ transitionDelay: `${delay}s` }}
+      // Keyboard focus reaching a not-yet-revealed control shows it immediately.
+      onFocus={() => setShown(true)}
     >
       {children}
     </div>

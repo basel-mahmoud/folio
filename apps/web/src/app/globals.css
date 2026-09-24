@@ -2,12 +2,13 @@
 
 /* ===========================================================================
    Folio web — mono-utility (matches the native app).
-   Layered neutrals, hairline borders, one cobalt accent. No gradient, no glow.
-   Dark-first.
+   Layered neutrals, hairline borders, one cobalt accent that resolves into the
+   brand gradient on the mark, primary actions and product imagery. Dark-first.
    =========================================================================== */
 
 :root,
 .dark {
+  color-scheme: dark;
   --bg: #09090b;
   --bg-inset: #0d0d10;
   --surface: #141417;
@@ -16,15 +17,27 @@
   --border-strong: #33333b;
   --ink: #f7f7f8;
   --ink-dim: #c5c5cd;
-  --muted: #86868f;
-  --faint: #56565e;
+  --muted: #8e8e97;
+  --faint: #5c5c65;
   --accent: #5277ff;
   --accent-ink: #ffffff;
+  --indigo: #8b6cff;
+  --mint: #43e3c0;
   --success: #43e3c0;
   --warning: #e0a93a;
+  --danger: #ff6b5e;
   /* Brand gradient — voice, not decoration. Mark, primary CTAs, product imagery.
      Never a background blob, never background-clip:text. Matches the native app. */
   --grad: linear-gradient(135deg, #5277ff 0%, #8b6cff 55%, #43e3c0 100%);
+  --grad-h: linear-gradient(90deg, #5277ff 0%, #8b6cff 55%, #43e3c0 100%);
+  /* Button fill: the cobalt→indigo leg, deepened so white text clears AA (≥4.6:1)
+     at every stop, including the hover end. */
+  --grad-cta: linear-gradient(135deg, #4665f0 0%, #5b63f5 45%, #7457f5 100%);
+
+  /* Motion. Strong ease-out for arrivals, ease-in-out for on-screen movement. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 @theme inline {
@@ -40,34 +53,91 @@
   --color-faint: var(--faint);
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
+  --color-indigo: var(--indigo);
+  --color-mint: var(--mint);
   --color-success: var(--success);
   --color-warning: var(--warning);
+  --color-danger: var(--danger);
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-mono-jb), ui-monospace, monospace;
+  --font-display: var(--font-mona), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
-* {
-  border-color: var(--border);
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--border);
+  }
 }
 
 html {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  scrollbar-color: var(--border-strong) var(--bg);
+  scrollbar-width: thin;
 }
 
+/* Font variables come from next/font on <html>. Stacks are spelled out here
+   because `@theme inline` does not emit --font-* as runtime variables. */
 body {
   background: var(--bg);
   color: var(--ink);
-  font-family: var(--font-sans);
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "cv11", "ss01";
+  caret-color: var(--accent);
 }
 
 .font-mono {
-  font-family: var(--font-mono);
+  font-family: var(--font-mono-jb), ui-monospace, monospace;
+}
+
+/* Display voice: Mona Sans, a touch expanded. GitHub's own face — the place
+   the audience's work already lives. Headlines only; UI stays Inter (app match). */
+@layer components {
+  .display {
+    font-family: var(--font-mona), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+    font-stretch: 108%;
+    font-weight: 640;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
 }
 
 ::selection {
-  background: color-mix(in oklab, var(--accent) 30%, transparent);
+  background: color-mix(in oklab, var(--accent) 38%, transparent);
+  color: var(--ink);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border: 3px solid var(--bg);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--faint);
+}
+
+a {
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: 1px;
+}
+
+/* Layered so a component's own radius (e.g. rounded-full) still applies on focus. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
 }
 
 @keyframes rise {
@@ -81,24 +151,134 @@ body {
   }
 }
 .rise {
-  animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: rise 0.7s var(--ease-expo) both;
 }
 
-/* Scroll reveal (toggled by IntersectionObserver in <Reveal>). */
-.reveal {
+/* Scroll reveal (toggled by IntersectionObserver in <Reveal>). Content is in the
+   DOM for SEO and visible without JS (the hidden state is gated on html.js); it
+   only settles in. A little blur bridges the fade. */
+.js .reveal {
   opacity: 0;
-  transform: translateY(16px);
+  transform: translateY(18px);
+  filter: blur(6px);
   transition:
-    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
+    opacity 0.7s var(--ease-expo),
+    transform 0.7s var(--ease-expo),
+    filter 0.7s var(--ease-expo);
 }
-.reveal.in {
+.js .reveal.in {
   opacity: 1;
   transform: none;
+  filter: none;
+}
+
+/* Word-by-word blur-in (<SplitText>). */
+.split-word {
+  display: inline-block;
+}
+.split[data-trigger="mount"] .split-word {
+  animation: split-in 0.95s var(--ease-expo) both;
+  animation-delay: calc(var(--d) + var(--i) * var(--s));
+}
+.js .split[data-trigger="view"] .split-word {
+  opacity: 0;
+  transform: translateY(0.3em);
+  filter: blur(8px);
+  transition:
+    opacity 0.8s var(--ease-expo),
+    transform 0.8s var(--ease-expo),
+    filter 0.8s var(--ease-expo);
+  transition-delay: calc(var(--d) + var(--i) * var(--s));
+}
+.js .split[data-trigger="view"].in .split-word {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+@keyframes split-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.3em);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+/* Mount-time entrance for hero pieces that are not split text. */
+.enter {
+  animation: rise 0.9s var(--ease-expo) both;
+  animation-delay: var(--d, 0s);
+}
+/* Travel only, never starts transparent: used on the hero image stage so the
+   poster counts for LCP at first paint. */
+@keyframes rise-y {
+  from { transform: translateY(12px); }
+  to { transform: none; }
+}
+.enter-y {
+  animation: rise-y 0.9s var(--ease-expo) both;
+  animation-delay: var(--d, 0s);
+}
+
+/* A focused control is never left inside a not-yet-revealed block. */
+.js .reveal:focus-within {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+/* In-view reveals driven by [data-in]. Final state is the default (no JS =
+   visible); the hidden state only applies once html.js is set. */
+.code-line {
+  /* Explicit final shape: inset() -> none cannot interpolate, which killed the wipe. */
+  clip-path: inset(0 0 0 0);
+  transition:
+    clip-path 0.55s steps(24, end),
+    opacity 0.01s;
+}
+.js .code-line:not([data-in]) {
+  clip-path: inset(0 100% 0 0);
+  opacity: 0.001;
+  transition: none;
+}
+.chain-row {
+  transition:
+    opacity 0.7s var(--ease-expo),
+    transform 0.7s var(--ease-expo),
+    filter 0.7s var(--ease-expo);
+}
+.js .chain-row:not([data-in]) {
+  opacity: 0;
+  transform: translateY(-8px);
+  filter: blur(4px);
+}
+.chip {
+  transition:
+    opacity 0.5s var(--ease-out),
+    transform 0.5s var(--ease-out);
+}
+.js .chip:not([data-in]) {
+  opacity: 0;
+  transform: translateY(4px);
+}
+.score-ring {
+  stroke-dashoffset: var(--ring-to);
+  transition: stroke-dashoffset 1.6s var(--ease-expo) 0.15s;
+}
+.js .score-ring:not([data-in]) {
+  stroke-dashoffset: var(--ring-from);
 }
 
 /* Continuous, tasteful motion. */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 @keyframes floaty {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
@@ -114,61 +294,221 @@ body {
 .marquee-track {
   display: inline-flex;
   width: max-content;
-  animation: marquee 34s linear infinite;
+  animation: marquee 40s linear infinite;
+}
+.marquee-viewport:hover .marquee-track,
+.marquee[data-paused] .marquee-track {
+  animation-play-state: paused;
 }
 
-/* Card hover lift + accent edge. */
-.lift {
-  transition:
-    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 0.25s ease;
-}
-.lift:hover {
-  transform: translateY(-3px);
-  border-color: var(--border-strong);
+@keyframes beam {
+  to { offset-distance: 100%; }
 }
 
-/* Brand-gradient primary action. Solid gradient FILL (matches the app's button),
-   no glow. Hover handled by motion / transform. */
-.btn-grad {
-  background-image: var(--grad);
-  color: #fff;
-  background-size: 140% 140%;
-  background-position: 0% 50%;
-  transition: background-position 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.btn-grad:hover {
-  background-position: 100% 50%;
+/* ---- Components (layered so Tailwind utilities can override them) ---- */
+@layer components {
+  /* Press feedback for anything tappable (Emil: the UI must feel like it heard you). */
+  .press {
+    transition: transform 160ms var(--ease-out);
+  }
+
+  .press:active {
+    transform: scale(0.97);
+  }
+
+  /* Card hover lift + accent edge. */
+  .lift {
+    transition:
+      transform 0.25s var(--ease-out),
+      border-color 0.25s ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .lift:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-strong);
+    }
+  }
+
+  /* Brand-gradient primary action. Solid gradient FILL (matches the app's button),
+     no glow. A soft inner highlight gives it a physical top edge. */
+  .btn-grad {
+    background-image: var(--grad-cta);
+    color: #fff;
+    background-size: 160% 160%;
+    background-position: 0% 50%;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.22),
+      0 1px 2px rgb(0 0 0 / 0.4),
+      0 8px 24px -12px rgb(0 0 0 / 0.8);
+    transition:
+      background-position 0.6s var(--ease-out),
+      transform 160ms var(--ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .btn-grad:hover {
+      background-position: 100% 50%;
+    }
+  }
+
+  .btn-grad:active {
+    transform: scale(0.97);
+  }
+
+  /* Hairline that carries the brand gradient — used as a 1px section divider/top rule. */
+  .grad-hairline {
+    height: 1px;
+    background-image: var(--grad-h);
+    opacity: 0.7;
+  }
+
+  /* Device frame shadow — depth, not glow. */
+  .device-shadow {
+    box-shadow:
+      0 2px 8px -2px rgba(0, 0, 0, 0.5),
+      0 30px 80px -40px rgba(0, 0, 0, 0.85);
+  }
+
+  /* Hairline gradient edge (the app's avatar/mark treatment). */
+  .tile-accent {
+    background:
+      linear-gradient(var(--surface), var(--surface)) padding-box,
+      var(--grad) border-box;
+    border: 1px solid transparent;
+  }
+
+  /* Dot field used as quiet texture behind product moments. Masked, never a blob. */
+  .dot-field {
+    background-image: radial-gradient(rgb(255 255 255 / 0.09) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+
+  /* Border beam (after Magic UI): a short gradient segment travelling the border.
+     Mask keeps it to a 1px stroke; offset-path keeps it on the rounded rect. */
+  .border-beam {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 1px solid transparent;
+    mask:
+      linear-gradient(transparent, transparent) padding-box,
+      linear-gradient(#000, #000) border-box;
+    mask-composite: intersect;
+    -webkit-mask-composite: source-in, xor;
+  }
+
+  .border-beam::after {
+    content: "";
+    position: absolute;
+    aspect-ratio: 1;
+    width: var(--beam-size, 180px);
+    background: linear-gradient(to left, #43e3c0, #8b6cff 40%, #5277ff 70%, transparent);
+    offset-path: rect(0 auto auto 0 round var(--beam-radius, 22px));
+    offset-anchor: 90% 50%;
+    animation: beam var(--beam-duration, 9s) linear infinite;
+  }
+
+  /* Border light that follows the cursor (<Spotlight>). Border only — no halo. */
+  .spotlight {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .spotlight::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: 2;
+    border-radius: inherit;
+    padding: 1px;
+    background: radial-gradient(280px circle at var(--mx, 50%) var(--my, 0%), rgb(255 255 255 / 0.42), rgb(255 255 255 / 0.1) 45%, transparent 70%);
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .spotlight::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), rgb(255 255 255 / 0.035), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .spotlight:hover::before,
+    .spotlight:hover::after {
+      opacity: 1;
+    }
+  }
 }
 
-/* Hairline that carries the brand gradient — used as a 1px section divider/top rule. */
-.grad-hairline {
-  height: 1px;
-  background-image: var(--grad);
-  opacity: 0.7;
+/* Without CSS motion paths the beam would park in a corner; hide it instead. */
+@supports not (offset-path: rect(0 auto auto 0 round 1px)) {
+  .border-beam { display: none; }
 }
 
-/* Device frame shadow — depth, not glow. */
-.device-shadow {
-  box-shadow:
-    0 2px 8px -2px rgba(0, 0, 0, 0.5),
-    0 30px 80px -40px rgba(0, 0, 0, 0.85);
+/* Beam pulse (<Outputs>): a short gradient dash travelling each path once per cycle.
+   Paths use pathLength="1", so dash units are fractions of the path. */
+.beam-pulse {
+  stroke-dasharray: 0.16 1;
+  stroke-dashoffset: 0.16;
+  opacity: 0;
 }
-
-/* Hairline tile for capability rows (no cards, just structure). */
-.tile-accent {
-  background:
-    linear-gradient(var(--surface), var(--surface)) padding-box,
-    var(--grad) border-box;
-  border: 1px solid transparent;
+[data-play] .beam-pulse {
+  opacity: 1;
+  animation: beam-pulse 3.4s var(--ease-in-out) infinite;
+}
+@keyframes beam-pulse {
+  from { stroke-dashoffset: 0.16; }
+  to { stroke-dashoffset: -1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  [data-play] .beam-pulse { opacity: 0; }
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
-  .reveal { opacity: 1; transform: none; }
+  .js .reveal, .js .split[data-trigger="view"] .split-word { opacity: 1; transform: none; filter: none; }
+  /* Reduced motion keeps the fade (it aids comprehension), drops the travel. */
+  .split[data-trigger="mount"] .split-word,
+  .enter {
+    animation: fade-in 0.4s ease both !important;
+    animation-delay: 0s !important;
+  }
+  .enter-y { animation: none !important; }
+  .js .chain-row:not([data-in]),
+  .js .chip:not([data-in]) { transform: none; filter: none; }
   .floaty { animation: none; }
+  .border-beam { display: none; }
+}
+
+/* Printing / Save as PDF: every reveal-gated block prints in its final state. */
+@media print {
+  .js .reveal,
+  .js .split[data-trigger="view"] .split-word,
+  .js .code-line:not([data-in]),
+  .js .chain-row:not([data-in]),
+  .js .chip:not([data-in]) {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    clip-path: none !important;
+    transition: none !important;
+  }
+  .js .score-ring:not([data-in]) { stroke-dashoffset: var(--ring-to) !important; transition: none !important; }
 }
