@@ -32,8 +32,18 @@ export function NumberTicker({
     const unsub = spring.on("change", (v) => {
       el.textContent = String(Math.round(v));
     });
-    return unsub;
-  }, [from, spring]);
+    // Printing / Save as PDF shows the real number, never the pre-reveal start.
+    const onPrint = () => {
+      mv.jump(value);
+      spring.jump(value);
+      el.textContent = String(value);
+    };
+    window.addEventListener("beforeprint", onPrint);
+    return () => {
+      unsub();
+      window.removeEventListener("beforeprint", onPrint);
+    };
+  }, [from, spring, mv, value]);
 
   useEffect(() => {
     const el = ref.current;

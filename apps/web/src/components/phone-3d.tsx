@@ -80,6 +80,11 @@ function Phone({ screen, reduce, onReady }: { screen: string; reduce: boolean; o
   // touch swipe that turns into a page scroll would otherwise leave the drag stuck.
   const endDrag = useRef<((ev: PointerEvent) => void) | null>(null);
 
+  // Released after holding still: the last move's velocity is stale, so don't fling.
+  const settle = () => {
+    if (drag.current.active && performance.now() - drag.current.lastT > 80) spin.current.vel = 0;
+  };
+
   const stopListening = () => {
     if (!endDrag.current) return;
     window.removeEventListener("pointerup", endDrag.current);
@@ -96,6 +101,7 @@ function Phone({ screen, reduce, onReady }: { screen: string; reduce: boolean; o
     const id = e.pointerId;
     endDrag.current = (ev: PointerEvent) => {
       if (ev.pointerId !== id) return;
+      settle();
       drag.current.active = false;
       document.body.style.cursor = "";
       stopListening();
@@ -117,6 +123,7 @@ function Phone({ screen, reduce, onReady }: { screen: string; reduce: boolean; o
     invalidate();
   };
   const onUp = (e: ThreeEvent<PointerEvent>) => {
+    settle();
     drag.current.active = false;
     (e.target as unknown as Element).releasePointerCapture?.(e.pointerId);
     document.body.style.cursor = "";

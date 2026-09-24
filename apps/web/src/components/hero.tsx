@@ -32,7 +32,7 @@ export function Hero() {
           </Magnetic>
           <Link
             href="/u/basel"
-            className="group inline-flex w-full items-center justify-center gap-2 rounded-[12px] border border-border-strong bg-surface/40 px-6 py-3.5 text-[15px] text-ink transition-[color,background-color,border-color,transform] duration-200 ease-[var(--ease-out)] hover:border-faint hover:bg-surface-2 active:scale-[0.97] sm:w-auto"
+            className="group inline-flex w-full items-center justify-center gap-2 rounded-[12px] border border-border-strong bg-surface/40 px-6 py-3.5 text-[15px] text-ink transition-[color,background-color,border-color,scale] duration-200 ease-[var(--ease-out)] hover:border-faint hover:bg-surface-2 active:scale-[0.97] sm:w-auto"
           >
             See a live example
             <ArrowRight size={16} className="text-muted transition-transform duration-200 ease-[var(--ease-out)] group-hover:translate-x-0.5" />

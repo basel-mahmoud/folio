@@ -199,12 +199,24 @@ function CvCompare() {
   // Value before the press: a touch that turns into a page scroll is cancelled
   // by the browser, and the divider should go back to where it was.
   const startV = useRef(50);
+  // The one-time hint never runs (or resumes) after the visitor has used the control.
+  const touched = useRef(false);
+  const hinting = useRef(false);
 
   useEffect(() => {
-    if (!inView || reduce) return;
+    if (!inView || reduce || touched.current) return;
     // A one-time hint that the divider moves.
-    const c = animate(x, [50, 22, 64, 50], { duration: 2.2, ease: [0.65, 0, 0.35, 1], delay: 0.3 });
-    return () => c.stop();
+    hinting.current = true;
+    const c = animate(x, [50, 22, 64, 50], {
+      duration: 2.2,
+      ease: [0.65, 0, 0.35, 1],
+      delay: 0.3,
+      onComplete: () => (hinting.current = false),
+    });
+    return () => {
+      c.stop();
+      hinting.current = false;
+    };
   }, [inView, reduce, x]);
 
   const setFrom = (clientX: number) => {
@@ -220,8 +232,11 @@ function CvCompare() {
       className="relative h-[300px] cursor-ew-resize touch-pan-y select-none overflow-hidden rounded-[14px] border border-border-strong bg-[#f4f4f5] sm:h-[280px]"
       onPointerDown={(e) => {
         dragging.current = true;
+        touched.current = true;
+        // Interrupting the hint: a cancelled press should land where the hint would have.
+        startV.current = hinting.current ? 50 : x.get();
+        hinting.current = false;
         x.stop();
-        startV.current = x.get();
         e.currentTarget.setPointerCapture(e.pointerId);
         setFrom(e.clientX);
       }}
@@ -257,6 +272,8 @@ function CvCompare() {
         onKeyDown={(e) => {
           if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
           e.preventDefault();
+          touched.current = true;
+          hinting.current = false;
           x.stop();
           const v = Math.min(96, Math.max(4, x.get() + (e.key === "ArrowLeft" ? -5 : 5)));
           x.jump(v);

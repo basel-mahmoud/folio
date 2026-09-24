@@ -147,13 +147,14 @@ export function PortfolioView({ bundle, handle }: { bundle: PortfolioBundle; han
           </Reveal>
           <ol className="relative ml-1 border-l border-border">
             {experiences.map((e, i) => (
-              <li key={e.id} className="relative pb-9 pl-6 last:pb-0">
-                {/* Outside <Reveal>: its transform would otherwise re-anchor the dot mid-transition. */}
-                <span
-                  aria-hidden
-                  className={`absolute -left-[4.5px] top-2 h-2 w-2 rounded-full ${e.end ? "bg-border-strong" : "tile-accent"}`}
-                />
-                <Reveal delay={Math.min(i, 4) * 0.06}>
+              <li key={e.id} className="pb-9 pl-6 last:pb-0">
+                {/* The Reveal is the dot's containing block in every state, so the dot fades and
+                    travels with its entry and never re-anchors mid-transition. */}
+                <Reveal delay={Math.min(i, 4) * 0.06} className="relative">
+                  <span
+                    aria-hidden
+                    className={`absolute -left-[28.5px] top-2 h-2 w-2 rounded-full ${e.end ? "bg-border-strong" : "tile-accent"}`}
+                  />
                   <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                     <h3 className="font-medium text-ink">
                       {e.role} <span className="font-normal text-muted">· {e.company}</span>

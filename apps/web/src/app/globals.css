@@ -131,10 +131,13 @@ a {
   text-decoration-thickness: 1px;
 }
 
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-  border-radius: 6px;
+/* Layered so a component's own radius (e.g. rounded-full) still applies on focus. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
 }
 
 @keyframes rise {
@@ -231,6 +234,8 @@ a {
 /* In-view reveals driven by [data-in]. Final state is the default (no JS =
    visible); the hidden state only applies once html.js is set. */
 .code-line {
+  /* Explicit final shape: inset() -> none cannot interpolate, which killed the wipe. */
+  clip-path: inset(0 0 0 0);
   transition:
     clip-path 0.55s steps(24, end),
     opacity 0.01s;
@@ -291,7 +296,7 @@ a {
   width: max-content;
   animation: marquee 40s linear infinite;
 }
-.marquee:hover .marquee-track,
+.marquee-viewport:hover .marquee-track,
 .marquee[data-paused] .marquee-track {
   animation-play-state: paused;
 }
@@ -505,5 +510,5 @@ a {
     clip-path: none !important;
     transition: none !important;
   }
-  .js .score-ring:not([data-in]) { stroke-dashoffset: var(--ring-to) !important; }
+  .js .score-ring:not([data-in]) { stroke-dashoffset: var(--ring-to) !important; transition: none !important; }
 }

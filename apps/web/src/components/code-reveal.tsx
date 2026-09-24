@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useInView } from "@/components/motion/in-view";
 
 export type Token = { t: string; c?: "kw" | "id" | "str" | "fn" | "cm" | "op" };
@@ -17,13 +17,24 @@ const COLOR: Record<NonNullable<Token["c"]>, string> = {
 export function CodeReveal({ lines, label }: { lines: Token[][]; label: string }) {
   const ref = useRef<HTMLPreElement>(null);
   const inView = useInView(ref, { once: true, margin: "0px 0px -15% 0px" });
+  // Only a block that actually scrolls needs to be a focusable, named region.
+  const [overflow, setOverflow] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const check = () => setOverflow(el.scrollWidth > el.clientWidth + 1);
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
   return (
-    // A focusable, labelled scroll region: long lines scroll horizontally on phones.
+    // Long lines scroll horizontally on phones; then it is a focusable, labelled region.
     <pre
       ref={ref}
-      tabIndex={0}
-      role="region"
-      aria-label={label}
+      tabIndex={overflow ? 0 : undefined}
+      role={overflow ? "region" : undefined}
+      aria-label={overflow ? label : undefined}
       className="font-mono overflow-x-auto pb-1 text-[12px] leading-[1.75] text-ink-dim sm:text-[12.5px]"
     >
       <code>
