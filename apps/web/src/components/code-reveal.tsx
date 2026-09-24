@@ -13,27 +13,26 @@ const COLOR: Record<NonNullable<Token["c"]>, string> = {
   op: "text-muted",
 };
 
-/** Real source, revealed line by line as if typed (clip-path wipe per line). */
+/** Real source, revealed line by line as if typed (clip-path wipe per line; hidden state gated on html.js in globals.css). */
 export function CodeReveal({ lines, label }: { lines: Token[][]; label: string }) {
   const ref = useRef<HTMLPreElement>(null);
   const inView = useInView(ref, { once: true, margin: "0px 0px -15% 0px" });
   return (
+    // A focusable, labelled scroll region: long lines scroll horizontally on phones.
     <pre
       ref={ref}
+      tabIndex={0}
+      role="region"
       aria-label={label}
-      className="font-mono overflow-x-auto text-[12px] leading-[1.75] text-ink-dim [scrollbar-width:none] sm:text-[12.5px]"
+      className="font-mono overflow-x-auto pb-1 text-[12px] leading-[1.75] text-ink-dim sm:text-[12.5px]"
     >
       <code>
         {lines.map((line, i) => (
           <span
             key={i}
-            className="block whitespace-pre transition-[clip-path,opacity] ease-[steps(24,end)]"
-            style={{
-              clipPath: inView ? "inset(0 0 0 0)" : "inset(0 100% 0 0)",
-              opacity: inView ? 1 : 0.001,
-              transitionDuration: inView ? "0.55s, 0.01s" : "0s",
-              transitionDelay: `${0.2 + i * 0.32}s`,
-            }}
+            data-in={inView ? "" : undefined}
+            className="code-line block w-max min-w-full whitespace-pre"
+            style={{ transitionDelay: `${0.2 + i * 0.32}s` }}
           >
             {line.length === 0 ? " " : line.map((tok, j) => <span key={j} className={tok.c ? COLOR[tok.c] : undefined}>{tok.t}</span>)}
           </span>

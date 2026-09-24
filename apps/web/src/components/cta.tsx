@@ -17,7 +17,7 @@ export function Cta({ qrSvg }: { qrSvg: string }) {
         <div>
           <SplitText as="h2" text="Make the page that gets you hired." className="display max-w-xl text-[clamp(2rem,4.4vw,3.4rem)] leading-[1.04] text-ink" />
           <p className="mt-5 text-lg text-ink-dim">
-            Made for <WordRotate className="text-ink" words={["software engineers", "designers", "new grads", "career switchers", "product managers"]} />
+            Made for <WordRotate className="text-ink" words={["software engineers", "designers", "new grads", "career switchers", "product managers", "you"]} />
           </p>
           <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
             <Magnetic className="w-full sm:w-auto">

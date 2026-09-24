@@ -210,6 +210,63 @@ a {
   animation: rise 0.9s var(--ease-expo) both;
   animation-delay: var(--d, 0s);
 }
+/* Travel only, never starts transparent: used on the hero image stage so the
+   poster counts for LCP at first paint. */
+@keyframes rise-y {
+  from { transform: translateY(12px); }
+  to { transform: none; }
+}
+.enter-y {
+  animation: rise-y 0.9s var(--ease-expo) both;
+  animation-delay: var(--d, 0s);
+}
+
+/* A focused control is never left inside a not-yet-revealed block. */
+.js .reveal:focus-within {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+/* In-view reveals driven by [data-in]. Final state is the default (no JS =
+   visible); the hidden state only applies once html.js is set. */
+.code-line {
+  transition:
+    clip-path 0.55s steps(24, end),
+    opacity 0.01s;
+}
+.js .code-line:not([data-in]) {
+  clip-path: inset(0 100% 0 0);
+  opacity: 0.001;
+  transition: none;
+}
+.chain-row {
+  transition:
+    opacity 0.7s var(--ease-expo),
+    transform 0.7s var(--ease-expo),
+    filter 0.7s var(--ease-expo);
+}
+.js .chain-row:not([data-in]) {
+  opacity: 0;
+  transform: translateY(-8px);
+  filter: blur(4px);
+}
+.chip {
+  transition:
+    opacity 0.5s var(--ease-out),
+    transform 0.5s var(--ease-out);
+}
+.js .chip:not([data-in]) {
+  opacity: 0;
+  transform: translateY(4px);
+}
+.score-ring {
+  stroke-dashoffset: var(--ring-to);
+  transition: stroke-dashoffset 1.6s var(--ease-expo) 0.15s;
+}
+.js .score-ring:not([data-in]) {
+  stroke-dashoffset: var(--ring-from);
+}
 
 /* Continuous, tasteful motion. */
 @keyframes fade-in {
@@ -234,7 +291,8 @@ a {
   width: max-content;
   animation: marquee 40s linear infinite;
 }
-.marquee:hover .marquee-track {
+.marquee:hover .marquee-track,
+.marquee[data-paused] .marquee-track {
   animation-play-state: paused;
 }
 
@@ -427,6 +485,25 @@ a {
     animation: fade-in 0.4s ease both !important;
     animation-delay: 0s !important;
   }
+  .enter-y { animation: none !important; }
+  .js .chain-row:not([data-in]),
+  .js .chip:not([data-in]) { transform: none; filter: none; }
   .floaty { animation: none; }
   .border-beam { display: none; }
+}
+
+/* Printing / Save as PDF: every reveal-gated block prints in its final state. */
+@media print {
+  .js .reveal,
+  .js .split[data-trigger="view"] .split-word,
+  .js .code-line:not([data-in]),
+  .js .chain-row:not([data-in]),
+  .js .chip:not([data-in]) {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    clip-path: none !important;
+    transition: none !important;
+  }
+  .js .score-ring:not([data-in]) { stroke-dashoffset: var(--ring-to) !important; }
 }

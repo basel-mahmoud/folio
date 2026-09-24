@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { Check, Plus } from "lucide-react";
 import { useInView } from "@/components/motion/in-view";
 import { NumberTicker } from "@/components/motion/number-ticker";
@@ -47,6 +47,8 @@ export function TailorDemo() {
   }, [inView, touched, reduce]);
 
   return (
+    // reducedMotion="user": travel and layout springs become instant; fades stay.
+    <MotionConfig reducedMotion="user">
     <div ref={ref} className="relative overflow-hidden rounded-[22px] border border-border bg-surface/60">
       <div className="grid lg:grid-cols-[0.9fr_1.1fr]">
         {/* Job + score */}
@@ -79,10 +81,9 @@ export function TailorDemo() {
                   strokeWidth="8"
                   strokeLinecap="round"
                   strokeDasharray={RING}
-                  style={{
-                    strokeDashoffset: inView ? RING * (1 - SCORE / 100) : RING,
-                    transition: "stroke-dashoffset 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s",
-                  }}
+                  data-in={inView ? "" : undefined}
+                  className="score-ring"
+                  style={{ "--ring-to": RING * (1 - SCORE / 100), "--ring-from": RING } as React.CSSProperties}
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -102,12 +103,9 @@ export function TailorDemo() {
             {KEYWORDS.map(({ k, hit }, i) => (
               <li
                 key={k}
-                className={`font-mono inline-flex items-center gap-1.5 rounded-[8px] border px-2.5 py-1 text-[12px] transition-[border-color,color,background-color,opacity,transform] duration-500 ease-[var(--ease-out)] ${
-                  !inView
-                    ? "translate-y-1 border-border text-faint opacity-0"
-                    : hit
-                      ? "border-accent/50 bg-accent/10 text-ink"
-                      : "border-dashed border-border-strong text-muted"
+                data-in={inView ? "" : undefined}
+                className={`chip font-mono inline-flex items-center gap-1.5 rounded-[8px] border px-2.5 py-1 text-[12px] ${
+                  hit ? "border-accent/50 bg-accent/10 text-ink" : "border-dashed border-border-strong text-muted"
                 }`}
                 style={{ transitionDelay: `${0.35 + i * 0.08}s` }}
               >
@@ -187,5 +185,6 @@ export function TailorDemo() {
         </div>
       </div>
     </div>
+    </MotionConfig>
   );
 }

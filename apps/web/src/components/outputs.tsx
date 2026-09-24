@@ -196,6 +196,9 @@ function CvCompare() {
   const left = useMotionTemplate`${x}%`;
   const [aria, setAria] = useState(50);
   const dragging = useRef(false);
+  // Value before the press: a touch that turns into a page scroll is cancelled
+  // by the browser, and the divider should go back to where it was.
+  const startV = useRef(50);
 
   useEffect(() => {
     if (!inView || reduce) return;
@@ -217,8 +220,9 @@ function CvCompare() {
       className="relative h-[300px] cursor-ew-resize touch-pan-y select-none overflow-hidden rounded-[14px] border border-border-strong bg-[#f4f4f5] sm:h-[280px]"
       onPointerDown={(e) => {
         dragging.current = true;
-        e.currentTarget.setPointerCapture(e.pointerId);
         x.stop();
+        startV.current = x.get();
+        e.currentTarget.setPointerCapture(e.pointerId);
         setFrom(e.clientX);
       }}
       onPointerMove={(e) => dragging.current && setFrom(e.clientX)}
@@ -226,7 +230,11 @@ function CvCompare() {
         dragging.current = false;
         setAria(Math.round(x.get()));
       }}
-      onPointerCancel={() => (dragging.current = false)}
+      onPointerCancel={() => {
+        dragging.current = false;
+        x.jump(startV.current);
+        setAria(Math.round(startV.current));
+      }}
     >
       <div className="absolute inset-0">
         <ModernCv />
@@ -249,8 +257,9 @@ function CvCompare() {
         onKeyDown={(e) => {
           if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
           e.preventDefault();
+          x.stop();
           const v = Math.min(96, Math.max(4, x.get() + (e.key === "ArrowLeft" ? -5 : 5)));
-          x.set(v);
+          x.jump(v);
           setAria(Math.round(v));
         }}
         className="absolute inset-y-0 z-10 -ml-5 flex w-10 justify-center focus-visible:outline-offset-[-6px]"

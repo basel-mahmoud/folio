@@ -68,20 +68,46 @@ function Phone({ screen, reduce, onReady }: { screen: string; reduce: boolean; o
   });
   const pointer = useRef({ x: 0, y: 0 });
   const tilt = useRef({ x: 0, y: 0 });
-  const introStart = useRef<number | null>(reduce ? -Infinity : null);
+  // Seconds of entrance played so far. Accumulated from frame deltas (not the
+  // R3F clock, which resets to 0 whenever the frameloop toggles off-screen).
+  const intro = useRef(reduce ? Infinity : 0);
   // Drag-to-spin state. Velocity is rad/s; on release a spring settles the angle.
   const drag = useRef({ active: false, lastX: 0, lastT: 0 });
   const spin = useRef({ angle: 0, vel: 0 });
+  // R3F calls a group handler once per intersected child mesh; handle each native event once.
+  const lastNative = useRef<Event | null>(null);
+  // Native end-of-drag listener: R3F never delivers pointercancel to objects, so a
+  // touch swipe that turns into a page scroll would otherwise leave the drag stuck.
+  const endDrag = useRef<((ev: PointerEvent) => void) | null>(null);
+
+  const stopListening = () => {
+    if (!endDrag.current) return;
+    window.removeEventListener("pointerup", endDrag.current);
+    window.removeEventListener("pointercancel", endDrag.current);
+    endDrag.current = null;
+  };
 
   const onDown = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
     drag.current = { active: true, lastX: e.clientX, lastT: performance.now() };
     (e.target as unknown as Element).setPointerCapture?.(e.pointerId);
     document.body.style.cursor = "grabbing";
+    stopListening();
+    const id = e.pointerId;
+    endDrag.current = (ev: PointerEvent) => {
+      if (ev.pointerId !== id) return;
+      drag.current.active = false;
+      document.body.style.cursor = "";
+      stopListening();
+      invalidate();
+    };
+    window.addEventListener("pointerup", endDrag.current);
+    window.addEventListener("pointercancel", endDrag.current);
   };
   const onMoveDrag = (e: ThreeEvent<PointerEvent>) => {
     const d = drag.current;
-    if (!d.active) return;
+    if (!d.active || e.nativeEvent === lastNative.current) return;
+    lastNative.current = e.nativeEvent;
     const now = performance.now();
     const delta = (e.clientX - d.lastX) * 0.012;
     spin.current.angle += delta;
@@ -94,6 +120,7 @@ function Phone({ screen, reduce, onReady }: { screen: string; reduce: boolean; o
     drag.current.active = false;
     (e.target as unknown as Element).releasePointerCapture?.(e.pointerId);
     document.body.style.cursor = "";
+    stopListening();
     invalidate();
   };
 
@@ -133,6 +160,10 @@ function Phone({ screen, reduce, onReady }: { screen: string; reduce: boolean; o
     if (!reduce) window.addEventListener("pointermove", onMove, { passive: true });
     return () => {
       window.removeEventListener("pointermove", onMove);
+      if (endDrag.current) {
+        window.removeEventListener("pointerup", endDrag.current);
+        window.removeEventListener("pointercancel", endDrag.current);
+      }
       document.body.style.cursor = "";
     };
   }, [onReady, reduce]);
@@ -157,9 +188,9 @@ function Phone({ screen, reduce, onReady }: { screen: string; reduce: boolean; o
     }
 
     // Mount entrance: rises and turns into its resting pose (ease-out expo).
-    // Wall-clock based, so a slow first few frames don't stretch it.
-    if (introStart.current === null) introStart.current = t;
-    const p = Math.min(1, (t - introStart.current) / 1.8);
+    // Unclamped deltas keep it wall-clock paced even if the first frames are slow.
+    if (intro.current < 1.8) intro.current += rawDt;
+    const p = Math.min(1, intro.current / 1.8);
     const e = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
 
     const float = reduce ? 0 : Math.sin(t * 0.9) * 0.045;

@@ -11,6 +11,7 @@ import {
   siVercel,
   type SimpleIcon,
 } from "simple-icons";
+import { MarqueeShell } from "@/components/marquee-shell";
 
 const STACK: { icon: SimpleIcon; label: string }[] = [
   { icon: siNextdotjs, label: "Next.js 16" },
@@ -25,13 +26,10 @@ const STACK: { icon: SimpleIcon; label: string }[] = [
   { icon: siVercel, label: "Vercel" },
 ];
 
-/** The real stack, as real marks (Simple Icons). One marquee on the page; pauses on hover. */
+/** The real stack, as real marks (Simple Icons). One marquee on the page; pauses on hover or via its toggle. */
 export function LogoMarquee() {
   return (
-    <div
-      className="marquee relative overflow-hidden border-y border-border py-5"
-      style={{ maskImage: "linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent)" }}
-    >
+    <MarqueeShell>
       <p className="sr-only">Built with {STACK.map((s) => s.label).join(", ")}.</p>
       <div className="marquee-track" aria-hidden>
         {[0, 1].map((k) => (
@@ -47,6 +45,6 @@ export function LogoMarquee() {
           </div>
         ))}
       </div>
-    </div>
+    </MarqueeShell>
   );
 }

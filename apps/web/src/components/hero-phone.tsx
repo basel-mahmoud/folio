@@ -1,13 +1,31 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Component, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { DeviceFrame } from "@/components/device";
 import { FlickeringGrid } from "@/components/motion/flickering-grid";
 import { useInView } from "@/components/motion/in-view";
 import { usePrefersReducedMotion } from "@/components/motion/use-reduced-motion";
 
 const Phone3D = dynamic(() => import("@/components/phone-3d"), { ssr: false });
+
+/**
+ * Contains every 3D failure (renderer creation, texture load, lazy chunk load)
+ * to the stage. R3F rethrows scene errors during render; without this boundary
+ * they would take down the whole page instead of falling back to the flat frame.
+ */
+class ThreeBoundary extends Component<{ onError: () => void; children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch() {
+    this.props.onError();
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
 
 /**
  * Hero product stage. The flat device frame renders first (SSR, LCP-friendly,
@@ -28,10 +46,11 @@ export function HeroPhone() {
 
   useEffect(() => {
     try {
-      const c = document.createElement("canvas");
-      const ok = !!(c.getContext("webgl2") || c.getContext("webgl"));
+      // three r186 renders with WebGL2 only; release the probe context right away.
+      const gl = document.createElement("canvas").getContext("webgl2");
+      gl?.getExtension("WEBGL_lose_context")?.loseContext();
       // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time capability probe
-      setWebgl(ok);
+      setWebgl(!!gl);
     } catch {
       setWebgl(false);
     }
@@ -65,9 +84,11 @@ export function HeroPhone() {
       </div>
 
       {webgl && !lost && (
-        <div className={`absolute inset-0 transition-opacity duration-700 ${live ? "opacity-100" : "opacity-0"}`}>
-          <Phone3D reduce={reduce} active={inView} onReady={onReady} onLost={onLost} />
-        </div>
+        <ThreeBoundary onError={onLost}>
+          <div className={`absolute inset-0 transition-opacity duration-700 ${live ? "opacity-100" : "opacity-0"}`}>
+            <Phone3D reduce={reduce} active={inView} onReady={onReady} onLost={onLost} />
+          </div>
+        </ThreeBoundary>
       )}
 
       <p

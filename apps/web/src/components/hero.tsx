@@ -40,7 +40,7 @@ export function Hero() {
         </div>
       </div>
 
-      <div className="enter relative" style={{ "--d": "0.2s" } as React.CSSProperties}>
+      <div className="enter-y relative" style={{ "--d": "0.2s" } as React.CSSProperties}>
         <HeroPhone />
       </div>
     </section>

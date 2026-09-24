@@ -40,6 +40,8 @@ const STEPS = [
 ] as const;
 
 const N = STEPS.length;
+const HIDDEN = "inset(100% 0% 0% 0%)";
+const SHOWN = "inset(0% 0% 0% 0%)";
 
 export function Story() {
   return (
@@ -104,12 +106,23 @@ function PinnedStory() {
                   type="button"
                   onClick={() => goTo(i)}
                   aria-current={i === active ? "step" : undefined}
-                  className={`block text-left transition-[opacity,filter] duration-500 ease-[var(--ease-out)] ${
-                    i === active ? "opacity-100" : "opacity-35 hover:opacity-60"
-                  }`}
+                  className="group block text-left"
                 >
-                  <span className="display block text-[clamp(1.5rem,2.3vw,2rem)] leading-tight text-ink">{s.title}</span>
-                  <span className="mt-2 block max-w-md text-pretty leading-relaxed text-ink-dim">{s.body}</span>
+                  {/* Inactive steps dim by colour, not opacity, so text and focus rings keep AA contrast. */}
+                  <span
+                    className={`display block text-[clamp(1.5rem,2.3vw,2rem)] leading-tight transition-colors duration-500 ease-[var(--ease-out)] ${
+                      i === active ? "text-ink" : "text-muted group-hover:text-ink-dim"
+                    }`}
+                  >
+                    {s.title}
+                  </span>
+                  <span
+                    className={`mt-2 block max-w-md text-pretty leading-relaxed transition-colors duration-500 ease-[var(--ease-out)] ${
+                      i === active ? "text-ink-dim" : "text-muted"
+                    }`}
+                  >
+                    {s.body}
+                  </span>
                 </button>
               </li>
             ))}
@@ -125,8 +138,8 @@ function PinnedStory() {
               </DeviceFrame>
             </motion.div>
             <p className="font-mono mt-7 h-5 text-xs text-muted" aria-live="polite">
-              <span className="text-muted/70">screen </span>
-              {STEPS[active].name}
+              <span className="text-muted">screen </span>
+              <span className="text-ink-dim">{STEPS[active].name}</span>
             </p>
           </div>
         </div>
@@ -138,9 +151,11 @@ function PinnedStory() {
 /** One screenshot layer that wipes up (clip-path) as its step arrives. */
 function ScreenLayer({ index, progress, src, alt }: { index: number; progress: MotionValue<number>; src: string; alt: string }) {
   const b = index / N;
-  const range = [b - 0.08, b + 0.01];
-  const clipPath = useTransform(progress, range, ["inset(100% 0% 0% 0%)", "inset(0% 0% 0% 0%)"]);
-  const scale = useTransform(progress, range, [1.08, 1]);
+  // Full 0..1 stops: motion accelerates clip-path onto a native ViewTimeline, and a
+  // partial range would get implicit end keyframes that wipe the layer back out.
+  const range = [0, b - 0.08, b + 0.01, 1];
+  const clipPath = useTransform(progress, range, [HIDDEN, HIDDEN, SHOWN, SHOWN]);
+  const scale = useTransform(progress, range, [1.08, 1.08, 1, 1]);
   return (
     <motion.div className="absolute inset-0" style={{ clipPath }}>
       <motion.div className="absolute inset-0" style={{ scale }}>
